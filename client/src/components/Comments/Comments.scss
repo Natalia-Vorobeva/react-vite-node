@@ -1,0 +1,47 @@
+.comments {
+	display: flex;
+	flex-direction: column; 
+	overflow-y: auto;
+	width: 100%;
+	border-bottom-right-radius: .5rem;
+	overflow: hidden;	
+	margin: .2rem 0 4rem 0;
+	padding: .3rem 0 0 0;
+	background-color: gray;
+
+	&__wrapper {
+		transition: all 2s ease;
+		display: flex;
+		padding: .5rem .2rem 0;
+		border-bottom-right-radius: 2rem;		
+		justify-content: space-between;
+		min-height: 4rem;
+		border-top: 1px solid rgb(216, 207, 207);
+	}
+
+	&__avatar {		
+		width: 3rem;
+		height: 3rem;
+		border-radius: 50%;
+		padding: 0 0 .2rem 0;
+		border-bottom: 1px solid #efeaea;
+	}
+
+	&__item {
+		display: flex;
+		width: 100%;
+		padding: 0 1rem;
+		color: white;
+	}
+
+	&__delete {
+		color:  rgb(150, 148, 148);
+		font-size: .7rem;
+	}
+	
+	&__user {
+		color: rgb(190, 188, 188);
+		padding: .2rem 0;
+		font-style: oblique;
+	}
+}

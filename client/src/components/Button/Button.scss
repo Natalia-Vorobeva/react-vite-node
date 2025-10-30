@@ -1,0 +1,29 @@
+.button {
+	transition: all .5s ease;
+	width: 6.4rem;
+	border-radius: 0.2rem;	
+	height: 2.8rem;
+	border: 1px solid #0088EE;	
+	font-size: 1.2rem;
+	color: #0088EE;
+	display: flex;	
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	cursor: pointer;
+	
+	&:hover {
+		background: radial-gradient(#0ecde9, #025e83);
+		color: white;
+	} 
+	
+	&_mini {
+		font-size: 0.8rem;
+		height: 1.5rem;
+		width: 4rem;
+	}
+	
+	&_inactive {
+		pointer-events: none;
+	}
+}

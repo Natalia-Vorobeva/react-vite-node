@@ -1,0 +1,131 @@
+# react-vite-node
+
+Приложение  - мессенджер.
+Данные погружаются по протоколу http.
+Тут я попрактиковалась с протоколами. Запустила frontend на https. А на сервере express создала httpsServer и через createProxyMiddleware получаю данные. 
+
+## Содержание
+
+- [Что здесь?](#что-здесь)
+- [Что нужно](#что-нужно)
+- [Установка](#установка)
+- [Запуск](#запуск)
+- [Конфигурация](#конфигурация)
+  - [Конфигурация Vite](#Конфигурация-vite)
+  - [Пользовательские скрипты в `package.json`](#пользовательские-скрипты-в-packagejson)
+  - [Пользовательские скрипты в `server/package.json`](#пользовательские-скрипты-в-serverpackagejson)
+  - [Как справиться с проблемами с `CORS` в Google chrome](#как-справиться-с-проблемами-с-CORS-в-Google-chrome)
+
+## Что здесь?
+
+- Минимальные настройки для приложения React на базе Vite, использующего сервер на базе Express.
+
+- Простой способ подключения двух портов через прокси-сервер.
+
+## Что нужно
+
+- Node.js
+- npm
+
+## Установка
+
+1. Нужно клонировать репозиторий:
+
+```bash
+git clone https://github.com/Natalia-Vorobeva/react-vite-node.git
+cd react-vite-node
+```
+
+2. Установить зависимости для client и server
+
+```bash
+npm install
+cd server && npm install && cd ..
+cd client && npm install && cd ..
+```
+
+## Запуск
+
+Чтобы запустить сервер разработки как для клиента, так и для сервера, запустите:
+
+```bash
+npm run start
+```
+
+Это приведет к одновременному запуску сервера разработки Vite и экспресс-сервера.
+
+## Конфигурация
+
+Вот несколько настроек, которые обеспечивают бесперебойную работу.
+
+### Конфигурация Vite
+
+Конфигурация находится в файле "vite.config.js`.
+
+- `proxy` гарантирует, что все запросы к `/api` будут перенаправляться на адрес, на котором запущен сервер Express. Конечно, вы можете выбрать свой собственный порт и изменить конфигурацию, чтобы привести ее в соответствие с ним.
+
+- `changeOrigin: true` изменяет источник запроса в соответствии с целевым URL-адресом.
+- плагин `vite-plugin-mkcert` (mkcert) нужен для поддержки сертификатов для сервисов разработки по протоколу HTTPS. Благодаря этому плагину приложение запускается на `https://localhost:5173`
+
+```javascript
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import mkcert from 'vite-plugin-mkcert'
+
+export default defineConfig({
+	server: {		
+		proxy: {
+			'/api': {
+				target: 'https://localhost:44305',
+				changeOrigin: true
+			}
+		},
+	},
+	plugins: [react(), mkcert()]
+})
+```
+### Пользовательские скрипты в `package.json`
+
+Основной файл 'package.json' (расположенный в корне проекта) содержит несколько пользовательских скриптов, которые управляют как клиентской, так и серверной частями приложения:
+
+```json
+	"scripts": {
+		"dev:client": "cd client && npm run dev",
+		"dev:server": "cd server && npm run dev",
+		"dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" ",
+		"start": "concurrently \"cd ./server && node index.js\" \"cd ./client && npm run start\"",
+		"build:client": "cd client && npm run build && cd ..",
+		"build:server": "cd server && npm install && cd ..",
+		"build": "npm run build:server && npm run build:client"
+	}
+```
+
+### Пользовательские скрипты в `server/package.json`
+
+Теперь давайте посмотрим на скрипты в файле package.json сервера:
+
+```json
+  "scripts": {
+		"dev": "node index.js",
+		"start": "node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+  },
+```
+И приложения React Vite: 
+```json
+  "scripts": {
+   "dev": "vite",
+		"start": "vite",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+```
+Эти пользовательские скрипты работают вместе, обеспечивая бесперебойную разработку и процесс сборки как для клиентской, так и для серверной частей приложения. Основные скрипты `package.json` управляют общим процессом сборки и разработки, в то время как серверные скрипты `package.json` выполняют задачи, специфичные для сервера.
+
+### Как справиться с проблемами с CORS в Google chrome
+Лучший вариант - установить расширение для хрома.
+`Extensions` -> `Manage extension` -> Любое расширение для CORS
+
+Удачи!
+
+
