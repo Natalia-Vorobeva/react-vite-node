@@ -12,7 +12,7 @@ import './index.css'
 import './App.scss'
 
 function App() {
-
+	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:44305';
 	const ref = useRef(null)
 	const dispatch = useDispatch()
 	const dataMessages = useSelector(apiSelectors.getDataMessages)
@@ -68,7 +68,7 @@ function App() {
 
 	// получение данных при загрузке страницы
 	useEffect(() => {
-		fetch('/api', requestOptions)
+		fetch(`${API_BASE_URL}`, requestOptions)
 			.then(response => response.json())
 			.then(
 				(result) => {
@@ -85,7 +85,7 @@ function App() {
 	// получение новых сообщений
 	async function fetchAPIData() {
 		try {
-			const response = await fetch('/api', requestOptionsNewMessages)
+			const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
 			if (!response.ok) throw new Error('Ошибка сети')
 			const data = await response.json()
 			if (typeof data !== 'string') {
@@ -119,8 +119,8 @@ function App() {
 
 	// загрузка "предыдущих" сообщений
 	function handleLoadOldMessages() {
-		fetch('/api', requestOptionsOldMessages)
-		// fetch('https://localhost:44305/', requestOptionsOldMessages)
+		fetch(`${API_BASE_URL}`, requestOptionsOldMessages)
+			// fetch('https://localhost:44305/', requestOptionsOldMessages)
 			.then(response => response.json())
 			.then(
 				(result) => {
