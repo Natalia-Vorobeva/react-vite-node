@@ -13,6 +13,8 @@ import './App.scss'
 
 function App() {
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:44305';
+
+	console.log('%cDATA', 'color: purple', API_BASE_URL, 'API_BASE_URL')
 	const ref = useRef(null)
 	const dispatch = useDispatch()
 	const dataMessages = useSelector(apiSelectors.getDataMessages)
