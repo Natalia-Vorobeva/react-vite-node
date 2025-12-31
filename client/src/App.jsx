@@ -68,7 +68,7 @@ function App() {
 
 	// получение данных при загрузке страницы
 	useEffect(() => {
-		fetch('https://localhost:44305', requestOptions)
+		fetch('/api', requestOptions)
 			.then(response => response.json())
 			.then(
 				(result) => {
@@ -85,7 +85,7 @@ function App() {
 	// получение новых сообщений
 	async function fetchAPIData() {
 		try {
-			const response = await fetch('https://localhost:44305', requestOptionsNewMessages)
+			const response = await fetch('/api', requestOptionsNewMessages)
 			if (!response.ok) throw new Error('Ошибка сети')
 			const data = await response.json()
 			if (typeof data !== 'string') {
@@ -119,7 +119,7 @@ function App() {
 
 	// загрузка "предыдущих" сообщений
 	function handleLoadOldMessages() {
-		fetch('https://localhost:44305', requestOptionsOldMessages)
+		fetch('/api', requestOptionsOldMessages)
 		// fetch('https://localhost:44305/', requestOptionsOldMessages)
 			.then(response => response.json())
 			.then(

@@ -1,0 +1,14 @@
+{
+	"rewrites": [
+		{
+			"source": "/api/:path*",
+			"destination": "http://a0830433.xsph.ru/:path*",
+			"headers": [
+				{
+					"key": "Host",
+					"value": "a0830433.xsph.ru"
+				}
+			]
+		}
+	]
+}
