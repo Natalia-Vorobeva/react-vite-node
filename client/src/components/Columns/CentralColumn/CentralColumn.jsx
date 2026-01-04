@@ -2,11 +2,11 @@ import { useEffect, useState, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { apiSelectors } from '../../../store/api/apiSelectors';
 import { handleDeleteCard, setIsModal, handleAddingFavourires } from '../../../store/api/apiSlice';
-import './CentralColumn.scss'
+import '../Column.scss'
+
 const Card = lazy(() => import('../../Card/Card'));
 
-function CentralColumn() {
-
+function CentralColumn({ searchQuery = '', searchResults = [] }) {
 	let column = 'central'
 
 	const dispatch = useDispatch()
@@ -21,6 +21,24 @@ function CentralColumn() {
 		const filter = centralCol.filter(el => el.liked == true)
 		setSortedArr(filter)
 	}, [btnFilterFavourites, centralCol])
+
+	// Фильтрация по поиску
+	const [filteredMessages, setFilteredMessages] = useState([]);
+	const [filteredFavorites, setFilteredFavorites] = useState([]);
+
+	useEffect(() => {
+		if (searchQuery && searchResults.length > 0) {
+			// Используем результаты поиска
+			setFilteredMessages(searchResults);
+			const filteredFavs = searchResults.filter(el => el.liked === true);
+			setFilteredFavorites(filteredFavs);
+		} else {
+			// Используем все сообщения
+			setFilteredMessages(centralCol);
+			const filteredFavs = centralCol.filter(el => el.liked === true);
+			setFilteredFavorites(filteredFavs);
+		}
+	}, [searchQuery, searchResults, centralCol]);
 
 	// удаление карточки
 	function handleDelCard(data) {
@@ -52,46 +70,52 @@ function CentralColumn() {
 		dispatch(handleAddingFavourires(newObj))
 	}
 
+	const renderCards = (items) => {
+		if (items.length === 0) {
+			return (
+				<div className="column-base__empty">
+					{searchQuery ? 'Сообщения не найдены' : 'Сообщений нет'}
+				</div>
+			);
+		}
+
+		return items.map((item, index) => {
+			function time(data) { return data.substring(11, 16) }
+			let key = `${item.id}${index}`
+			return (
+				<div
+					id={`${key}/central`}
+					key={key}
+					className="card-wrapper"
+				>
+					<Suspense fallback={<div className="column-base__fallback">Загрузка...</div>}>
+						<Card
+							className={isModal ? "" : "_mini"}
+							column={column}
+							time={time(item.date)}
+							data={item}
+							handleDelCard={handleDelCard}
+							handleFavourites={handleFavourites}
+						/>
+					</Suspense>
+				</div>
+			)
+		});
+	}
+
 	return (
 		<div className="central-column">
 			<div className="central-column__wrapper">
-				{
-					btnFilterFavourites
-						?
-						centralCol.map((item, index) => {
-							function time(data) { return data.substring(11, 16) }
-							let key = `${item.id}${index}`
-							return <div
-								id={`${key}/central`}
-								key={key}>
-								<Suspense fallback={<div className="central-column__fallback">Loading...</div>}>
-									<Card className={isModal ? "" : "_mini"}
-										column={column}
-										time={time(item.date)}
-										data={item}
-										handleDelCard={handleDelCard}
-										handleFavourites={handleFavourites}
-									/>
-								</Suspense>
-							</div>
-						})
-						:
-						sortedArr.map((item, index) => {
-							function time(data) { return data.substring(11, 16) }
-							let key = `${item.id}${index}`
-							return <div
-								id={`${key}/central`}
-								key={key}>
-								<Card
-									className={isModal ? "" : "_mini"}
-									column={column}
-									time={time(item.date)}
-									data={item}
-									handleDelCard={handleDelCard}
-									handleFavourites={handleFavourites}
-								/>
-							</div>
-						})
+				{searchQuery && (
+					<div className="column-base__search-info">
+						{/* Поиск: "{searchQuery}"  */}
+						• Найдено: {filteredMessages.length}
+					</div>
+				)}
+
+				{btnFilterFavourites
+					? renderCards(filteredMessages)
+					: renderCards(filteredFavorites)
 				}
 			</div>
 		</div>

@@ -10,5 +10,8 @@
 		"build:client": "cd client && npm run build && cd ..",
 		"build:server": "cd server && npm install && cd ..",
 		"build": "npm run build:server && npm run build:client"
+	},
+	"devDependencies": {
+		"baseline-browser-mapping": "^2.9.11"
 	}
 }

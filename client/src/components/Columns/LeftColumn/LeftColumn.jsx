@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { apiSelectors } from '../../../store/api/apiSelectors';
 import { handleDeleteCard, setIsModal, handleAddingFavourires } from '../../../store/api/apiSlice';
-import Card from '../../Card/Card';
-import './LeftColumn.scss'
+import '../Column.scss'
 
-function LeftColumn() {
+const Card = lazy(() => import('../../Card/Card'));
 
-	let column = "left"
-	
+function LeftColumn({ searchQuery = '', searchResults = [] }) {
+	let column = 'left'
+
 	const dispatch = useDispatch()
 	const messages = useSelector(apiSelectors.getDataMessages)
-	const isModal = useSelector(apiSelectors.getIsModal)
 	const btnFilterFavourites = useSelector(apiSelectors.getBtnFilterFavourites)
+	const isModal = useSelector(apiSelectors.getIsModal)
 	const [sortedArr, setSortedArr] = useState(messages.leftCol)
 
 	const { leftCol } = messages
@@ -22,6 +22,25 @@ function LeftColumn() {
 		setSortedArr(filter)
 	}, [btnFilterFavourites, leftCol])
 
+	// Фильтрация по поиску
+	const [filteredMessages, setFilteredMessages] = useState([]);
+	const [filteredFavorites, setFilteredFavorites] = useState([]);
+
+	useEffect(() => {
+		if (searchQuery && searchResults.length > 0) {
+			// Используем результаты поиска
+			setFilteredMessages(searchResults);
+			const filteredFavs = searchResults.filter(el => el.liked === true);
+			setFilteredFavorites(filteredFavs);
+		} else {
+			// Используем все сообщения
+			setFilteredMessages(leftCol);
+			const filteredFavs = leftCol.filter(el => el.liked === true);
+			setFilteredFavorites(filteredFavs);
+		}
+	}, [searchQuery, searchResults, leftCol]);
+
+	// удаление карточки
 	function handleDelCard(data) {
 		dispatch(handleDeleteCard({
 			object: data,
@@ -30,6 +49,7 @@ function LeftColumn() {
 		if (isModal) { dispatch(setIsModal(false)) }
 	}
 
+	// добавление в избранное
 	const handleFavourites = (data) => {
 		let el
 		if ('liked' in data == false) {
@@ -50,49 +70,55 @@ function LeftColumn() {
 		dispatch(handleAddingFavourires(newObj))
 	}
 
+	const renderCards = (items) => {
+		if (items.length === 0) {
+			return (
+				<div className="column-base__empty">
+					{searchQuery ? 'Сообщения не найдены' : 'Сообщений нет'}
+				</div>
+			);
+		}
+
+		return items.map((item, index) => {
+			function time(data) { return data.substring(11, 16) }
+			let key = `${item.id}${index}`
+			return (
+				<div
+					id={`${key}/left`}
+					key={key}
+					// className="card-wrapper"
+				>
+					<Suspense fallback={<div className="column-base__fallback">Загрузка...</div>}>
+						<Card
+							className={isModal ? "" : "_mini"}
+							column={column}
+							time={time(item.date)}
+							data={item}
+							handleDelCard={handleDelCard}
+							handleFavourites={handleFavourites}
+						/>
+					</Suspense>
+				</div>
+			)
+		});
+	}
+
 	return (
-		<section className="left-column">
+		<div className="left-column">
 			<div className="left-column__wrapper">
-
-				{
-					btnFilterFavourites
-						?
-						leftCol.map((item, index) => {
-							function time(data) { return data.substring(11, 16) }
-							let key = `${item.id}${index}`
-							return <div
-								id={`${key}/central`}
-								key={key}>
-								<Card className={isModal ? "" : "_mini"}
-									column={column}
-									time={time(item.date)}
-									data={item}
-									handleDelCard={handleDelCard}
-									handleFavourites={handleFavourites}
-								/>
-							</div>
-						})
-						:
-						sortedArr?.map((item, index) => {
-							function time(data) { return data.substring(11, 16) }
-							let key = `${item.id}${index}`
-							return <div
-								id={`${key}/central`}
-								key={key}>
-								<Card className={isModal ? "" : "_mini"}
-									column={column}
-									time={time(item.date)}
-									date={item.date}
-									data={item}
-									handleDelCard={handleDelCard}
-									handleFavourites={handleFavourites}
-								/>
-
-							</div>
-						})
+				{searchQuery && (
+					<div className="column-base__search-info">
+						{/* Поиск: "{searchQuery}"  */}
+						• Найдено: {filteredMessages.length}
+					</div>
+				)}
+				
+				{btnFilterFavourites
+					? renderCards(filteredMessages)
+					: renderCards(filteredFavorites)
 				}
 			</div>
-		</section>
+		</div>
 	)
 }
 

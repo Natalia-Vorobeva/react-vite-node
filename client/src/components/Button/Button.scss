@@ -1,29 +1,91 @@
+@use "sass:map";
+@use "sass:color";
+
+$button-colors: (
+  "left": linear-gradient(135deg, #4dabf7, #339af0),
+  "central": linear-gradient(135deg, #ff922b, #fd7e14),
+  "right": linear-gradient(135deg, #40c057, #2f9e44)
+);
+
+$button-hover-colors: (
+  "left": linear-gradient(135deg, #339af0, #228be6),
+  "central": linear-gradient(135deg, #fd7e14, #f76707),
+  "right": linear-gradient(135deg, #2f9e44, #2b8a3e)
+);
+
 .button {
-	transition: all .5s ease;
-	width: 6.4rem;
-	border-radius: 0.2rem;	
-	height: 2.8rem;
-	border: 1px solid #0088EE;	
-	font-size: 1.2rem;
-	color: #0088EE;
-	display: flex;	
-	align-items: center;
-	justify-content: center;
-	line-height: 1;
-	cursor: pointer;
-	
-	&:hover {
-		background: radial-gradient(#0ecde9, #025e83);
-		color: white;
-	} 
-	
-	&_mini {
-		font-size: 0.8rem;
-		height: 1.5rem;
-		width: 4rem;
-	}
-	
-	&_inactive {
-		pointer-events: none;
-	}
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  overflow: hidden;
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  min-height: 36px;
+  max-width: 100%;
+  white-space: nowrap;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  // Цвета кнопок
+  &[id="left"] {
+    background: map.get($button-colors, "left");
+    
+    &:hover {
+      background: map.get($button-hover-colors, "left");
+    }
+  }
+  
+  &[id="central"] {
+    background: map.get($button-colors, "central");
+    
+    &:hover {
+      background: map.get($button-hover-colors, "central");
+    }
+  }
+  
+  &[id="right"] {
+    background: map.get($button-colors, "right");
+    
+    &:hover {
+      background: map.get($button-hover-colors, "right");
+    }
+  }
+  
+  &_mini {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    min-height: 32px;
+    border-radius: 8px;
+  }
+  
+  &_inactive {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    
+    &:hover {
+      transform: none !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+      background: inherit !important;
+    }
+  }
 }

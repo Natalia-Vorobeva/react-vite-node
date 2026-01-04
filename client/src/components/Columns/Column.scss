@@ -1,0 +1,360 @@
+@use "sass:color";
+
+// Переменные для цветовой схемы
+$primary-color: #6366f1;
+$primary-hover: #4f46e5;
+$bg-light: #f8fafc;
+$bg-white: #ffffff;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$border-color: #e2e8f0;
+$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$radius: 12px;
+$radius-sm: 8px;
+
+// Общие стили для всех колонок
+.column-base {
+	padding-top: 10px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+	color: #808080;
+  background: linear-gradient(180deg, rgba($bg-light, 0.5) 0%, rgba(white, 0.5) 100%);
+  
+  &__wrapper {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    scroll-behavior: smooth;
+
+    // Кастомный скроллбар
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba($text-secondary, 0.1);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba($primary-color, 0.3);
+      border-radius: 4px;
+      transition: background 0.3s;
+
+      &:hover {
+        background: rgba($primary-color, 0.7);
+      }
+    }
+  }
+
+	&__empty {
+		color: #adb5bd;
+		padding: 0 0 0 5px;
+	}
+
+  &__fallback {
+    text-align: center;
+    padding: 40px;
+    color: $text-secondary;
+    font-size: 16px;
+    animation: pulse 1.5s infinite;
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid $border-color;
+      border-top-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+  }
+}
+
+// Центральная колонка
+.central-column {
+  @extend .column-base;
+  border-right: 1px solid $border-color;
+  border-left: 1px solid $border-color;
+
+	&::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,  #8b5cf6, #adb5bd);
+    opacity: 0.8;
+}
+  
+  &__wrapper {
+    @extend .column-base__wrapper;
+  }
+}
+
+// Левая колонка
+.left-column {
+  @extend .column-base;
+  border-right: 1px solid $border-color;
+  
+  &__wrapper {
+    @extend .column-base__wrapper;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    opacity: 0.8;
+  }
+}
+
+// Правая колонка
+.right-column {
+  @extend .column-base;
+  border-left: 1px solid $border-color;
+  
+  &__wrapper {
+    @extend .column-base__wrapper;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #adb5bd, #3b82f6);
+    opacity: 0.8;
+  }
+}
+
+// Стили для Card внутри колонок
+.card {
+  &__control-card {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba($border-color, 0.5);
+    flex-wrap: wrap;
+    
+    .button {
+      flex: 1;
+      min-width: 60px;
+      padding: 8px 12px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      
+      svg, .icon {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      
+      &:hover {
+        transform: translateY(-2px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+	&__button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin: 0;
+  }
+}
+}
+
+// Анимация спиннера для прелоадера
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    &__control-card {
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 10px;
+      
+      .button {
+        padding: 6px 8px;
+        font-size: 12px;
+        min-width: 50px;
+        
+        svg, .icon {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+  }
+  
+  .card__button-icon {
+    padding: 6px 8px;
+    font-size: 12px;
+    
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    &__control-card {
+      gap: 4px;
+      margin-top: 8px;
+      padding-top: 8px;
+      
+      .button {
+        padding: 5px 6px;
+        font-size: 11px;
+        min-width: 45px;
+        
+        svg, .icon {
+          width: 12px;
+          height: 12px;
+        }
+      }
+    }
+  }
+  
+  .card__button-icon {
+    padding: 5px 6px;
+    font-size: 11px;
+    
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+@media (max-width: 320px) {
+  .column-base {
+    &__wrapper {
+      padding: 8px;
+      gap: 6px;
+    }
+  }
+  
+  .card {
+    &__control-card {
+      gap: 4px;
+      
+      .button {
+        padding: 5px 6px;
+        font-size: 10px;
+        min-height: 30px;
+      }
+    }
+  }
+}
+
+// Для планшетов и десктопов - горизонтальный скролл колонок
+.app__columns {
+  &.horizontal-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    
+    > * {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
+      width: 100%;
+      min-width: 100%;
+      transition: transform 0.3s ease;
+      
+      &:not(:first-child) {
+        border-left: 1px solid $border-color;
+      }
+    }
+    
+    // Индикаторы текущей колонки
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      
+      span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba($text-secondary, 0.3);
+        transition: all 0.3s ease;
+        
+        &.active {
+          background: $primary-color;
+          transform: scale(1.2);
+        }
+      }
+    }
+  }
+}
+
+// Темная тема
+@media (prefers-color-scheme: dark) {
+  .column-base {
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
+    
+    &__wrapper {
+      &::-webkit-scrollbar-track {
+        background: rgba(71, 85, 105, 0.3);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.5);
+        
+        &:hover {
+          background: rgba(99, 102, 241, 0.7);
+        }
+      }
+    }
+  }
+  
+  .card {
+    &__control-card {
+      border-top-color: rgba(71, 85, 105, 0.5);
+    }
+  }
+}

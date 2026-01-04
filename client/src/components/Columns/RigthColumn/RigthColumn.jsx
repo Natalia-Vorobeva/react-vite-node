@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { handleDeleteCard, setIsModal, handleAddingFavourires } from '../../../store/api/apiSlice';
 import { apiSelectors } from '../../../store/api/apiSelectors';
-import Card from '../../Card/Card';
-import './RigthColumn.scss'
+import { handleDeleteCard, setIsModal, handleAddingFavourires } from '../../../store/api/apiSlice';
+import '../Column.scss'
 
-function RigthColumn() {
+const Card = lazy(() => import('../../Card/Card'));
 
+function RightColumn({ searchQuery = '', searchResults = [] }) {
 	let column = 'right'
 
 	const dispatch = useDispatch()
 	const messages = useSelector(apiSelectors.getDataMessages)
-	const isModal = useSelector(apiSelectors.getIsModal)
 	const btnFilterFavourites = useSelector(apiSelectors.getBtnFilterFavourites)
+	const isModal = useSelector(apiSelectors.getIsModal)
 	const [sortedArr, setSortedArr] = useState(messages.rightCol)
 
 	const { rightCol } = messages
@@ -22,6 +22,25 @@ function RigthColumn() {
 		setSortedArr(filter)
 	}, [btnFilterFavourites, rightCol])
 
+	// Фильтрация по поиску
+	const [filteredMessages, setFilteredMessages] = useState([]);
+	const [filteredFavorites, setFilteredFavorites] = useState([]);
+
+	useEffect(() => {
+		if (searchQuery && searchResults.length > 0) {
+			// Используем результаты поиска
+			setFilteredMessages(searchResults);
+			const filteredFavs = searchResults.filter(el => el.liked === true);
+			setFilteredFavorites(filteredFavs);
+		} else {
+			// Используем все сообщения
+			setFilteredMessages(rightCol);
+			const filteredFavs = rightCol.filter(el => el.liked === true);
+			setFilteredFavorites(filteredFavs);
+		}
+	}, [searchQuery, searchResults, rightCol]);
+
+	// удаление карточки
 	function handleDelCard(data) {
 		dispatch(handleDeleteCard({
 			object: data,
@@ -30,6 +49,7 @@ function RigthColumn() {
 		if (isModal) { dispatch(setIsModal(false)) }
 	}
 
+	// добавление в избранное
 	const handleFavourites = (data) => {
 		let el
 		if ('liked' in data == false) {
@@ -50,47 +70,56 @@ function RigthColumn() {
 		dispatch(handleAddingFavourires(newObj))
 	}
 
+	const renderCards = (items) => {
+		if (items.length === 0) {
+			return (
+				<div className="column-base__empty">
+					{searchQuery ? 'Сообщения не найдены' : 'Сообщений нет'}
+				</div>
+			);
+		}
+
+		return items.map((item, index) => {
+			function time(data) { return data.substring(11, 16) }
+			let key = `${item.id}${index}`
+			return (
+				<div
+					id={`${key}/right`}
+					key={key}
+					className="card-wrapper"
+				>
+					<Suspense fallback={<div className="column-base__fallback">Загрузка...</div>}>
+						<Card
+							className={isModal ? "" : "_mini"}
+							column={column}
+							time={time(item.date)}
+							data={item}
+							handleDelCard={handleDelCard}
+							handleFavourites={handleFavourites}
+						/>
+					</Suspense>
+				</div>
+			)
+		});
+	}
+
 	return (
-		<section className="right-column">
+		<div className="right-column">
 			<div className="right-column__wrapper">
-				{
-					btnFilterFavourites
-						?
-						rightCol.map((item, index) => {
-							function time(data) { return data.substring(11, 16) }
-							let key = `${item.id}${index}`
-							return <div
-								id={`${key}/central`}
-								key={key}>
-								<Card className={isModal ? "" : "_mini"}
-									column={column}
-									time={time(item.date)}
-									data={item}
-									handleDelCard={handleDelCard}
-									handleFavourites={handleFavourites}
-								/>
-							</div>
-						})
-						:
-						sortedArr?.map((item, index) => {
-							function time(data) { return data.substring(11, 16) }
-							let key = `${item.id}${index}`
-							return <div
-								id={`${key}/central`}
-								key={key}>
-								<Card className={isModal ? "" : "_mini"}
-									column={column}
-									time={time(item.date)}
-									data={item}
-									handleDelCard={handleDelCard}
-									handleFavourites={handleFavourites}
-								/>
-							</div>
-						})
+				{searchQuery && (
+					<div className="column-base__search-info">
+						{/* Поиск: "{searchQuery}"  */}
+						• Найдено: {filteredMessages.length}
+					</div>
+				)}
+				
+				{btnFilterFavourites
+					? renderCards(filteredMessages)
+					: renderCards(filteredFavorites)
 				}
 			</div>
-		</section>
+		</div>
 	)
 }
 
-export default RigthColumn
+export default RightColumn

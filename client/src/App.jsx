@@ -6,15 +6,14 @@ import FormSearch from './components/FormSearch/FormSearch'
 import Preloader from './components/Preloader/Preloader'
 import LeftColumn from './components/Columns/LeftColumn/LeftColumn'
 import CentralColumn from './components/Columns/CentralColumn/CentralColumn'
-import RigthColumn from './components/Columns/RigthColumn/RigthColumn'
 import Popup from './components/Popup/Popup'
 import './index.css'
 import './App.scss'
+import RightColumn from './components/Columns/RigthColumn/RigthColumn'
 
 function App() {
-	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:44305';
+	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:44305'
 
-	console.log('%cDATA', 'color: purple', API_BASE_URL, 'API_BASE_URL')
 	const ref = useRef(null)
 	const dispatch = useDispatch()
 	const dataMessages = useSelector(apiSelectors.getDataMessages)
@@ -23,8 +22,11 @@ function App() {
 	const btnFilterFavourites = useSelector(apiSelectors.getBtnFilterFavourites)
 	const isReverse = useSelector(apiSelectors.getIsReverse)
 	const [isLoading, setIsLoading] = useState(false)
-	const [searchLenght, setSearchLenght] = useState(null)
+	const [searchLength, setSearchLength] = useState(null)
 	const [width, setWidth] = useState(window.innerWidth)
+	const [oldMessagesLoaded, setOldMessagesLoaded] = useState(false)
+	const [searchValue, setSearchValue] = useState('')
+	const [activeTab, setActiveTab] = useState('central') // Состояние для активной вкладки
 
 	useEffect(() => {
 		const handleResize = (event) => {
@@ -37,14 +39,14 @@ function App() {
 		}
 	}, [width])
 
-	// найденные в поиске объекты (ПОКА НЕ ИСПОЛЬЗУЕТСЯ)
+	// найденные в поиске объекты
 	const [searchData, setSearchData] = useState({
 		leftCol: [],
 		centralCol: [],
-		rigthCol: []
+		rightCol: []
 	})
 
-	// ЗАПРОСЫ	
+	// ЗАПРОСЫ
 	const formData = new FormData()
 	formData.append('actionName', 'MessagesLoad')
 	formData.append('messageId', 0)
@@ -85,32 +87,32 @@ function App() {
 	}, [])
 
 	// получение новых сообщений
-	async function fetchAPIData() {
-		try {
-			const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
-			if (!response.ok) throw new Error('Ошибка сети')
-			const data = await response.json()
-			if (typeof data !== 'string') {
-				let arrModified = data.Messages.map(object => {
-					let dateModified = object.date.replace(/ /g, 'T').concat("Z")
-					return { ...object, date: dateModified }
-				})
-				let arr = [...dataMessages.centralCol, ...arrModified]
-				arr.sort((a, b) => {
-					return new Date(b.date) - new Date(a.date)
-				})
-				const ids = arr.map(object => object.id)
-				let id = Math.max(...ids)
-				dispatch(setLastId(id))
-				dispatch(setNewMessages({ ...dataMessages, centralCol: arr }))
-			} else {
-				return
-			}
-		}
-		catch (err) {
-			console.log('Ошибка:', err)
-		}
-	}
+	// async function fetchAPIData() {
+	// 	try {
+	// 		const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
+	// 		if (!response.ok) throw new Error('Ошибка сети')
+	// 		const data = await response.json()
+	// 		if (typeof data !== 'string') {
+	// 			let arrModified = data.Messages.map(object => {
+	// 				let dateModified = object.date.replace(/ /g, 'T').concat("Z")
+	// 				return { ...object, date: dateModified }
+	// 			})
+	// 			let arr = [...dataMessages.centralCol, ...arrModified]
+	// 			arr.sort((a, b) => {
+	// 				return new Date(b.date) - new Date(a.date)
+	// 			})
+	// 			const ids = arr.map(object => object.id)
+	// 			let id = Math.max(...ids)
+	// 			dispatch(setLastId(id))
+	// 			dispatch(setNewMessages({ ...dataMessages, centralCol: arr }))
+	// 		} else {
+	// 			return
+	// 		}
+	// 	}
+	// 	catch (err) {
+	// 		console.log('Ошибка:', err)
+	// 	}
+	// }
 
 	useEffect(() => {
 		const intervalId = setInterval(() => {
@@ -122,12 +124,12 @@ function App() {
 	// загрузка "предыдущих" сообщений
 	function handleLoadOldMessages() {
 		fetch(`${API_BASE_URL}`, requestOptionsOldMessages)
-			// fetch('https://localhost:44305/', requestOptionsOldMessages)
 			.then(response => response.json())
 			.then(
 				(result) => {
 					setIsLoading(false)
 					dispatch(setOldMessages(result.Messages))
+					setOldMessagesLoaded(true) // Делаем кнопку неактивной
 				},
 				(error) => {
 					setIsLoading(true)
@@ -136,19 +138,64 @@ function App() {
 			)
 	}
 
+	const getColumnCounts = (column) => {
+		const columnKey = `${column}Col`;
+		const allMessages = dataMessages[columnKey] || [];
+
+		// Если есть поиск, используем searchData
+		if (searchValue) {
+			const searchResults = searchData[columnKey] || [];
+			const total = searchResults.length;
+			const favorites = searchResults.filter(el => el.liked).length;
+			return { total, favorites };
+		}
+
+		const total = allMessages.length;
+		const favorites = allMessages.filter(el => el.liked).length;
+		return { total, favorites };
+	}
+
 	function handleSearch(value) {
-		const left = dataMessages.leftCol.filter(el => el.content.includes(value))
-		const central = dataMessages.centralCol.filter(el => el.content.includes(value))
-		const right = dataMessages.rightCol.filter(el => el.content.includes(value))
+		setSearchValue(value)
+		if (!value.trim()) {
+			setSearchLength(null)
+			setSearchData({ leftCol: [], centralCol: [], rightCol: [] })
+			return
+		}
+
+		const left = dataMessages.leftCol.filter(el => el.content.toLowerCase().includes(value.toLowerCase()))
+		const central = dataMessages.centralCol.filter(el => el.content.toLowerCase().includes(value.toLowerCase()))
+		const right = dataMessages.rightCol.filter(el => el.content.toLowerCase().includes(value.toLowerCase()))
+
 		const arr = {
 			leftCol: left,
 			centralCol: central,
-			rigthCol: right
+			rightCol: right
 		}
 		setSearchData(arr)
 		const count = Object.values(arr).reduce((sum, val) =>
 			sum + (Array.isArray(val) ? val.length : 0), 0)
-		setSearchLenght(count)
+		setSearchLength(count)
+	}
+
+	// Функция для очистки поиска
+	function handleClearSearch() {
+		setSearchValue('')
+		setSearchLength(null)
+		setSearchData({ leftCol: [], centralCol: [], rightCol: [] })
+	}
+
+	// Функция для получения количества сообщений в колонке
+	const getColumnMessageCount = (column, isFiltered = false) => {
+		if (searchValue) {
+			return searchData[`${column}Col`]?.length || 0
+		}
+
+		if (isFiltered && btnFilterFavourites) {
+			return dataMessages[`${column}Col`]?.filter(el => el.liked)?.length || 0
+		}
+
+		return dataMessages[`${column}Col`]?.length || 0
 	}
 
 	return (
@@ -159,44 +206,125 @@ function App() {
 			{isLoading ?
 				<Preloader />
 				:
-				width >= 750 ?
-					<div ref={ref} className="app__content">
-						<div className="app__control-header">
-							<h1 className="app__title">My <div className="app__title-span">♡</div> messenger</h1>
+				<div ref={ref} className="app__content">
+					<div className="app__control-header">
+						<div className="app__header-top">
+							<h1 className="app__title">My <span className="app__title-span">♡</span> messenger</h1>
+							<div className="app__search-container">
+								<div className="app__search">
+									<FormSearch
+										onSubmit={handleSearch}
+										initialValue={searchValue}
+										onClear={handleClearSearch}
+									/>
+								</div>
+								{searchLength !== null && (
+									<div className="app__search-info">• Найдено: {searchLength}
+										{/* <p className="app__length"></p> */}
+									</div>
+								)}
+							</div>
+						</div>
+						<div className="app__header-bottom">
 							<div className="app__header-content">
-								<button onClick={handleLoadOldMessages} className="app__button-load">Загрузить предыдущие</button>
-								<button onClick={() => dispatch(onToggleReverse(!isReverse))} className="app__buttons-sort">
-									<span className={`app__button-sort app__button-sort_active ${!isReverse && "move"}`}>
-										{!isReverse ? "Новые" : "Cтарые"} сверху
-									</span>
-									<span className={`app__button-sort ${isReverse && "flip"}`}>
-										{!isReverse ? "Cтарые" : "Новые"}
-									</span>
-								</button>
-								<button onClick={() => dispatch(setStateBtnFilterFavourites(!btnFilterFavourites))} className="app__buttons-sort">
-									<span className={`app__button-sort app__button-sort_active ${!btnFilterFavourites && "move"}`}>
-										{!btnFilterFavourites ? "Избранное" : "Все сообщения"}
-									</span>
-									<span className={`app__button-sort ${btnFilterFavourites && "flip"}`}>
-										{!btnFilterFavourites ? "Все сообщения" : "Избранное"}
+								<button
+									onClick={handleLoadOldMessages}
+									disabled={oldMessagesLoaded}
+									className={`app__button-load ${oldMessagesLoaded ? 'app__button-load_disabled' : ''}`}
+								>
+									<span className="app__button-load-icon">↻</span>
+									<span className="app__button-load-text">
+										{oldMessagesLoaded ? 'Загружено' : 'Загрузить предыдущие'}
 									</span>
 								</button>
-							</div>
-							<div className="app__search" >
-								<FormSearch onSubmit={handleSearch} />
-								<p className="app__lenght">Найдено совпадений: {searchLenght}</p>
+								<div className="app__sort-buttons">
+									<button
+										onClick={() => dispatch(onToggleReverse(!isReverse))}
+										className="app__button-sort-toggle"
+										aria-label={isReverse ? "Показать новые сверху" : "Показать старые сверху"}
+										title={isReverse ? "Показать новые сверху" : "Показать старые сверху"}
+									>
+										<span className={`app__button-sort-icon ${isReverse ? 'app__button-sort-icon_reverse' : ''}`}>
+											↕
+										</span>
+										<span className="app__button-sort-text">
+											{isReverse ? "Старые сверху" : "Новые сверху"}
+										</span>
+									</button>
+									<button
+										onClick={() => dispatch(setStateBtnFilterFavourites(!btnFilterFavourites))}
+										className="app__button-filter-toggle"
+										aria-label={btnFilterFavourites ? "Показать все сообщения" : "Показать избранное"}
+										title={btnFilterFavourites ? "Показать все сообщения" : "Показать избранное"}
+									>
+										<span className={`app__button-filter-icon ${!btnFilterFavourites ? 'app__button-filter-icon_active' : ''}`}>
+											{!btnFilterFavourites ? '★' : '☆'}
+										</span>
+										<span className="app__button-filter-text">
+											{!btnFilterFavourites ? "Избранное" : "Все"}
+										</span>
+									</button>
+								</div>
 							</div>
 						</div>
-						<div className="app__columns">
-							<LeftColumn />
-							<CentralColumn />
-							<RigthColumn />
+					</div>
+
+					{width <= 900 && (
+						<div className="app__column-tabs">
+							<button
+								className={`app__column-tab ${activeTab === 'left' ? 'app__column-tab_active' : ''}`}
+								onClick={() => setActiveTab('left')}
+							>
+								<span className="app__column-tab-name">Левая</span>
+								<span className="app__column-tab-count">
+									({getColumnCounts('left').favorites}/{getColumnCounts('left').total})
+								</span>
+							</button>
+							<button
+								className={`app__column-tab ${activeTab === 'central' ? 'app__column-tab_active' : ''}`}
+								onClick={() => setActiveTab('central')}
+							>
+								<span className="app__column-tab-name">Центральная</span>
+								<span className="app__column-tab-count">
+									({getColumnCounts('central').favorites}/{getColumnCounts('central').total})
+								</span>
+							</button>
+							<button
+								className={`app__column-tab ${activeTab === 'right' ? 'app__column-tab_active' : ''}`}
+								onClick={() => setActiveTab('right')}
+							>
+								<span className="app__column-tab-name">Правая</span>
+								<span className="app__column-tab-count">
+									({getColumnCounts('right').favorites}/{getColumnCounts('right').total})
+								</span>
+							</button>
 						</div>
+					)}
+
+					<div className="app__columns">
+						{width > 900 ? (
+							// Десктопная версия: все три колонки
+							<>
+								<LeftColumn searchQuery={searchValue} searchResults={searchData.leftCol} />
+								<CentralColumn searchQuery={searchValue} searchResults={searchData.centralCol} />
+								<RightColumn searchQuery={searchValue} searchResults={searchData.rightCol} />
+							</>
+						) : (
+							// Мобильная версия: только активная колонка
+							<>
+								{activeTab === 'left' && (
+									<LeftColumn searchQuery={searchValue} searchResults={searchData.leftCol} />
+								)}
+								{activeTab === 'central' && (
+									<CentralColumn searchQuery={searchValue} searchResults={searchData.centralCol} />
+								)}
+								{activeTab === 'right' && (
+									<RightColumn searchQuery={searchValue} searchResults={searchData.rightCol} />
+								)}
+							</>
+						)}
 					</div>
-					:
-					<div className="app__info">
-						<div className="app__info-text">К сожалению, для этого расширения экрана пока нет контента</div>
-					</div>
+				</div>
 			}
 		</div>
 	)

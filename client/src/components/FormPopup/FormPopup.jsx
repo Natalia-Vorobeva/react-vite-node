@@ -4,32 +4,58 @@ import avatar from '../../assets/images/avatar.png'
 import './FormPopup.scss';
 
 function FormPopup({ onSubmit }) {
+  const [comment, setComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!comment.trim() || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    onSubmit(e, comment.trim());
+    setComment('');
+    
+    // Сбросить состояние отправки после небольшой задержки
+    setTimeout(() => {
+      setIsSubmitting(false);
+    }, 500);
+  };
+  
+  const characterCount = comment.length;
+  const characterLimit = 500;
+  const isNearLimit = characterCount > characterLimit * 0.8;
+  const isOverLimit = characterCount > characterLimit;
 
-	const [value, setValue] = useState('')
-
-	const handleChangeTextComment = (e) => setValue(e.target.value)
-
-	function handleSubmit(e) {
-		onSubmit(e, value)
-		setValue('')
-	}
 
 	return (
 		<Form name="comment" onSubmit={handleSubmit} >
-			<img src={avatar} alt="Аватар" className="form-popup__avatar" />
-			<input
-				type="text"
-				value={value}
-				onInput={(e) => handleChangeTextComment(e)}
-				id="comment-input"
-				placeholder="Написать комментарий..."
-				className="form-popup__input"
-			/>
-			<button disabled={!value} className="form-popup__submit">
-				<span className="form-popup__send">
-					<svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g id="send_comment" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd"><g id="send_24__send_24"><path id="send_24__Rectangle-76" d="M0 0h24v24H0z"></path><path d="M5.74 15.75a39.14 39.14 0 0 0-1.3 3.91c-.55 2.37-.95 2.9 1.11 1.78 2.07-1.13 12.05-6.69 14.28-7.92 2.9-1.61 2.94-1.49-.16-3.2C17.31 9.02 7.44 3.6 5.55 2.54c-1.89-1.07-1.66-.6-1.1 1.77.17.76.61 2.08 1.3 3.94a4 4 0 0 0 3 2.54l5.76 1.11a.1.1 0 0 1 0 .2L8.73 13.2a4 4 0 0 0-3 2.54Z" id="send_24__Mask" fill="currentColor"></path></g></g></svg>
-				</span>
-			</button>
+			<div style={{ flex: 1, width: '100%' }}>
+        <textarea
+          className="comment__textarea"
+          value={comment}
+          onChange={(e) => {
+            if (e.target.value.length <= characterLimit) {
+              setComment(e.target.value);
+            }
+          }}
+          placeholder="Напишите ваш комментарий..."
+          rows="3"
+          disabled={isSubmitting}
+        />
+        <span className={`comment__counter ${
+          isOverLimit ? 'comment__counter_error' : 
+          isNearLimit ? 'comment__counter_warning' : ''
+        }`}>
+          {characterCount}/{characterLimit}
+        </span>
+      </div>
+      <button
+        type="submit"
+        className="comment__submit"
+        disabled={!comment.trim() || isSubmitting || isOverLimit}
+      >
+        {isSubmitting ? 'Отправка...' : 'Отправить'}
+      </button>
 		</Form>
 	)
 }
