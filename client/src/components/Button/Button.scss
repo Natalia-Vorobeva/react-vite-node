@@ -1,17 +1,5 @@
-@use "sass:map";
-@use "sass:color";
-
-$button-colors: (
-  "left": linear-gradient(135deg, #4dabf7, #339af0),
-  "central": linear-gradient(135deg, #ff922b, #fd7e14),
-  "right": linear-gradient(135deg, #40c057, #2f9e44)
-);
-
-$button-hover-colors: (
-  "left": linear-gradient(135deg, #339af0, #228be6),
-  "central": linear-gradient(135deg, #fd7e14, #f76707),
-  "right": linear-gradient(135deg, #2f9e44, #2b8a3e)
-);
+@use "../../assets/styles/variables" as *;
+@use "../../assets/styles/mixins" as *;
 
 .button {
   position: relative;
@@ -46,26 +34,29 @@ $button-hover-colors: (
   
   // Цвета кнопок
   &[id="left"] {
-    background: map.get($button-colors, "left");
+    opacity: .8;
+    background: $button-left-color; // БЕЗ префикса vars.
     
     &:hover {
-      background: map.get($button-hover-colors, "left");
+      opacity: 1;
     }
   }
   
   &[id="central"] {
-    background: map.get($button-colors, "central");
+    opacity: .8;
+    background: $button-central-color; // БЕЗ префикса vars.
     
     &:hover {
-      background: map.get($button-hover-colors, "central");
+      opacity: 1;
     }
   }
   
   &[id="right"] {
-    background: map.get($button-colors, "right");
+    opacity: .8;
+    background: $button-right-color; // БЕЗ префикса vars.
     
     &:hover {
-      background: map.get($button-hover-colors, "right");
+      opacity: 1;
     }
   }
   

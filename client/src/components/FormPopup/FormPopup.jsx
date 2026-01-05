@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Form from '../Form/Form';
-import avatar from '../../assets/images/avatar.png'
 import './FormPopup.scss';
 
 function FormPopup({ onSubmit }) {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Автофокус на textarea при монтировании
+  useEffect(() => {
+    const textarea = document.querySelector('.comment__textarea');
+    if (textarea) {
+      textarea.focus();
+    }
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!comment.trim() || isSubmitting) return;
@@ -14,11 +21,19 @@ function FormPopup({ onSubmit }) {
     setIsSubmitting(true);
     onSubmit(e, comment.trim());
     setComment('');
-    
-    // Сбросить состояние отправки после небольшой задержки
     setTimeout(() => {
       setIsSubmitting(false);
     }, 500);
+  };
+  
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !isSubmitting) {
+      e.preventDefault();
+      
+      if (characterCount <= characterLimit && comment.trim()) {
+        handleSubmit(e);
+      }
+    }
   };
   
   const characterCount = comment.length;
@@ -26,11 +41,12 @@ function FormPopup({ onSubmit }) {
   const isNearLimit = characterCount > characterLimit * 0.8;
   const isOverLimit = characterCount > characterLimit;
 
-
 	return (
-		<Form name="comment" onSubmit={handleSubmit} >
-			<div style={{ flex: 1, width: '100%' }}>
+		<Form name="comment" onSubmit={handleSubmit}>
+			
+			<div className="comment__flex" >
         <textarea
+				name="textarea"
           className="comment__textarea"
           value={comment}
           onChange={(e) => {
@@ -38,6 +54,7 @@ function FormPopup({ onSubmit }) {
               setComment(e.target.value);
             }
           }}
+          onKeyDown={handleKeyDown}
           placeholder="Напишите ваш комментарий..."
           rows="3"
           disabled={isSubmitting}
@@ -48,7 +65,6 @@ function FormPopup({ onSubmit }) {
         }`}>
           {characterCount}/{characterLimit}
         </span>
-      </div>
       <button
         type="submit"
         className="comment__submit"
@@ -56,8 +72,9 @@ function FormPopup({ onSubmit }) {
       >
         {isSubmitting ? 'Отправка...' : 'Отправить'}
       </button>
+      </div>
 		</Form>
 	)
 }
 
-export default FormPopup
+export default FormPopup;

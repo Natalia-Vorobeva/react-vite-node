@@ -22,25 +22,21 @@ function LeftColumn({ searchQuery = '', searchResults = [] }) {
 		setSortedArr(filter)
 	}, [btnFilterFavourites, leftCol])
 
-	// Фильтрация по поиску
 	const [filteredMessages, setFilteredMessages] = useState([]);
 	const [filteredFavorites, setFilteredFavorites] = useState([]);
 
 	useEffect(() => {
 		if (searchQuery && searchResults.length > 0) {
-			// Используем результаты поиска
 			setFilteredMessages(searchResults);
 			const filteredFavs = searchResults.filter(el => el.liked === true);
 			setFilteredFavorites(filteredFavs);
 		} else {
-			// Используем все сообщения
 			setFilteredMessages(leftCol);
 			const filteredFavs = leftCol.filter(el => el.liked === true);
 			setFilteredFavorites(filteredFavs);
 		}
 	}, [searchQuery, searchResults, leftCol]);
 
-	// удаление карточки
 	function handleDelCard(data) {
 		dispatch(handleDeleteCard({
 			object: data,
@@ -49,7 +45,6 @@ function LeftColumn({ searchQuery = '', searchResults = [] }) {
 		if (isModal) { dispatch(setIsModal(false)) }
 	}
 
-	// добавление в избранное
 	const handleFavourites = (data) => {
 		let el
 		if ('liked' in data == false) {
@@ -86,7 +81,6 @@ function LeftColumn({ searchQuery = '', searchResults = [] }) {
 				<div
 					id={`${key}/left`}
 					key={key}
-					// className="card-wrapper"
 				>
 					<Suspense fallback={<div className="column-base__fallback">Загрузка...</div>}>
 						<Card
@@ -106,13 +100,15 @@ function LeftColumn({ searchQuery = '', searchResults = [] }) {
 	return (
 		<div className="left-column">
 			<div className="left-column__wrapper">
-				{searchQuery && (
+				{(searchQuery || !btnFilterFavourites) && (
 					<div className="column-base__search-info">
-						{/* Поиск: "{searchQuery}"  */}
-						• Найдено: {filteredMessages.length}
+						{searchQuery
+							? `• Найдено: ${filteredMessages.length}`
+							: `• Избранных: ${filteredFavorites.length}`
+						}
 					</div>
 				)}
-				
+
 				{btnFilterFavourites
 					? renderCards(filteredMessages)
 					: renderCards(filteredFavorites)

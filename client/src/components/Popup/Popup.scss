@@ -1,308 +1,299 @@
-@keyframes showed {
-  0% {
-    opacity: 0;
-    transform: translateY(10%);
-  }
-  20% {
-    opacity: .2;
-  }
-  60% {
-    opacity: .8;
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-}
-
-@keyframes active {
-  0% {
-    opacity: 0;
-    transform: translateY(90%);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-}
+@use "../../assets/styles/variables" as *;
 
 .popup {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.86);
-  z-index: 1000;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  box-sizing: border-box;
-
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  padding: 20px;
+	background-color: rgba(0, 0, 0, 0.8);
+	.card {
+		pointer-events: none;
+		&__copy {
+			pointer-events: auto;
+		}		
+	}
+  
   &_showed {
-    animation: showed .3s forwards;
+    opacity: 1;
+    visibility: visible;
   }
-
+  
   &__overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
-
+  
   &__container {
     position: relative;
-    animation: active .4s ease-out;
     width: 100%;
     max-width: 800px;
-    height: 90vh;
-    max-height: 900px;
-    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    max-height: 90vh;
+    background: white;
     border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-    display: flex;
-    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    border: 1px solid rgba(229, 231, 235, 0.5);
+    z-index: 1;
+    animation: popupScaleIn 0.3s ease;
   }
-
-  &__content {
-    flex: 1;
-    overflow-y: auto;
+  
+  &__inner {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    max-height: 90vh;
   }
-
-  &__close {
+  
+&__close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+		z-index: 2003;
+    top: 10px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    color: $text-inverse;
+    background: $button-central-color;
     border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 300;
-    cursor: pointer;
-    z-index: 1001;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-
+    transition: background-color 0.2s ease, box-shadow 0.2s ease; // Только фон и тень
+    
     &:hover {
-      transform: scale(1.1) rotate(90deg);
-      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: scale(1.1); 
+      background: lighten-color($button-central-color, 10%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
-
+    
     &:active {
-      transform: scale(0.95) rotate(90deg);
+      transform: scale(0.95);
     }
   }
-
+  
   &__wrapper {
-    padding: 1.5rem;
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
+    max-height: 40vh;
+    overflow-y: auto;
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
     
-    .card {
-      box-shadow: none;
-      margin-bottom: 0;
-      border: 1px solid #e5e7eb;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
       
       &:hover {
-        transform: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: #a8a8a8;
       }
+    }
+  }
+  
+  &__list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 24px;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
       
-      // Скрываем ненужные кнопки в попапе
-      &__message,
-      &__increase {
-        display: none !important;
+      &:hover {
+        background: #a8a8a8;
       }
-     
-      // &__settings {
-      //   position: relative;
-        
-      //   &::before {
-      //     content: '📋';
-      //     font-size: 1.2rem;
+    }
+  }
+  
+  &__input {
+    flex-shrink: 0;
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;   
+   }
+  
+  // Анимация
+  @keyframes popupScaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  // Адаптивность
+  
+  // Планшеты
+  @media (max-width: 1024px) {
+    padding: 16px;
+    
+    &__container {
+      max-width: 90%;
+    }
+    
+    &__wrapper,
+    &__list {
+      padding: 20px;
+    }
+    
+    &__input {
+      padding: 16px 20px;
+    }
+  }
+  
+  // Мобильные устройства
+  @media (max-width: 768px) {
+    padding: 12px;
+    
+    &__container {
+      max-width: 100%;
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+    
+    &__inner {
+      max-height: 95vh;
+    }
+    
+    &__close {
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      font-size: 20px;
+      // background: rgba(255, 255, 255, 0.8);
+    }
+    
+    &__wrapper {
+      padding: 16px;
+      max-height: 35vh;
+    }
+    
+    &__list {
+      padding: 16px;
+    }
+    
+    &__input {
+      padding: 12px 16px;
+      
+      // .comment {
+      //   &__input-wrapper {
+      //     gap: 8px;
       //   }
         
-      //   span {
-      //     display: none;
+      //   &__textarea {
+      //     padding: 10px 16px;
+      //     font-size: 16px; // Для предотвращения масштабирования на iOS
+      //     border-radius: 20px;
+      //     min-height: 48px; // Удобное касание на мобильных
+      //   }
+        
+      //   &__submit {
+      //     height: 48px;
+      //     width: 48px;
+      //     min-height: 48px; // Удобное касание
       //   }
       // }
     }
   }
-
-  &__list {
-    flex: 1;
-    min-height: 0;
-    padding: 0 1.5rem ;
-    background: linear-gradient(to bottom, #f8fafc, #ffffff);
-		overflow-y: auto;
-    
-    // Кастомный скроллбар
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 4px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: rgba(59, 130, 246, 0.4);
-      border-radius: 4px;
-      border: 2px solid transparent;
-      background-clip: content-box;
-      
-      &:hover {
-        background: rgba(59, 130, 246, 0.6);
-        background-clip: content-box;
-      }
-    }    
-    scrollbar-width: thin;
-    scrollbar-color: rgba(59, 130, 246, 0.4) rgba(0, 0, 0, 0.05);
-  }
-
-  // &__input {
-  //   flex-shrink: 0;
-  //   padding: 1.5rem;
-  //   background: white;
-  //   border-top: 1px solid #e5e7eb;
-  //   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-  //   position: relative;
-  //   z-index: 2;
-  // }
-}
-
-// Адаптивность
-@media (max-width: 768px) {
-  .popup {
-    padding: 0.5rem;
-    
-    &__container {
-      height: 95vh;
-      max-height: none;
-      border-radius: 12px;
-    }
+  
+  // Очень маленькие экраны
+  @media (max-width: 360px) {
+    padding: 8px;
     
     &__wrapper {
-      padding: 1rem;
+      padding: 12px;
+      max-height: 30vh;
     }
     
     &__list {
-      padding: 1rem;
+      padding: 12px;
     }
     
     &__input {
-      padding: 1rem;
-    }
-    
-    &__close {
-      top: 0.5rem;
-      right: 0.5rem;
-      width: 2.2rem;
-      height: 2.2rem;
-      font-size: 1.6rem;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .popup {
-    &__container {
-      border-radius: 8px;
-    }
-    
-    &__wrapper {
-      padding: 0.8rem;
-    }
-    
-    &__list {
-      padding: 0.8rem;
-    }
-    
-    &__input {
-      padding: 0.8rem;
-    }
-    
-    &__close {
-      width: 2rem;
-      height: 2rem;
-      font-size: 1.4rem;
-    }
-  }
-}
-
-// Темная тема
-@media (prefers-color-scheme: dark) {
-  .popup {
-    background-color: rgba(0, 0, 0, 0.92);
-    
-    &__container {
-      background: linear-gradient(145deg, #1f2937, #111827);
-      border: 1px solid rgba(75, 85, 99, 0.5);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    }
-    
-    &__content {
-      &::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.05);
-      }
+      padding: 8px 12px;
       
-      &::-webkit-scrollbar-thumb {
-        background: rgba(59, 130, 246, 0.3);
+      // .comment {
+      //   &__input-wrapper {
+      //     gap: 6px;
+      //   }
         
-        &:hover {
-          background: rgba(59, 130, 246, 0.5);
-        }
-      }
+      //   &__textarea {
+      //     padding: 8px 12px;
+      //     border-radius: 18px;
+      //   }
+        
+      //   &__submit {
+      //     height: 44px;
+      //     width: 44px;
+      //   }
+      // }
+    }
+  }
+  
+  // Ландшафтная ориентация на мобильных
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 8px;
+    align-items: flex-start;
+    
+    &__container {
+      max-height: 95vh;
+    }
+    
+    &__inner {
+      max-height: 95vh;
     }
     
     &__wrapper {
-      background: #1f2937;
-      border-bottom: 1px solid #374151;
-      
-      .card {
-        background: #1f2937;
-        border: 1px solid #374151;
-        
-        &__settings::before {
-          content: '📋';
-          filter: brightness(0.9);
-        }
-      }
+      max-height: 30vh;
+      padding: 12px;
     }
     
     &__list {
-      background: linear-gradient(to bottom, #111827, #1f2937);
+      max-height: 40vh;
     }
-    
-    &__input {
-      background: #1f2937;
-      border-top: 1px solid #374151;
-    }
-    
-    &__close {
-      background: linear-gradient(135deg, #7f1d1d, #991b1b);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      
-      &:hover {
-        background: linear-gradient(135deg, #991b1b, #7f1d1d);
-      }
+  }
+  
+  @supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
     }
   }
 }

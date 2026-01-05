@@ -1,17 +1,6 @@
-@use "sass:color";
-// Переменные для цветовой схемы
-$primary-color: #6366f1;
-$primary-hover: #4f46e5;
-$bg-light: #f8fafc;
-$bg-white: #ffffff;
-$text-primary: #1e293b;
-$primary-disabled: #1e293b;
-$text-secondary: #64748b;
-$border-color: #e2e8f0;
-$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-$radius: 12px;
-$radius-sm: 8px;
+// @use "sass:map";
+// @import "../../assets/styles/variables";
+@use "../../assets/styles/variables" as *;
 
 .form-search {
   &__container {
@@ -33,19 +22,16 @@ $radius-sm: 8px;
     border: 2px solid $border-color;
     border-radius: $radius-sm 0 0 $radius-sm;
     font-size: 14px;
-    background: $bg-white;
+    background: $bg-primary;
     color: $text-primary;
     transition: all 0.3s ease;
     
-    // Убираем стандартный крестик в браузерах
     &::-webkit-search-cancel-button,
     &::-webkit-search-decoration,
     &::-webkit-search-results-button,
     &::-webkit-search-results-decoration {
       display: none;
-    }
-    
-    // Для Firefox
+    }    
     &[type="search"] {
       -moz-appearance: none;
       appearance: none;
@@ -110,13 +96,13 @@ $radius-sm: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: -2px; // Убираем двойную границу
+    margin-left: -2px; 
     position: relative;
     z-index: 1;
     min-width: 48px;
     
     &:hover {
-      background: linear-gradient(135deg, $primary-hover, color.adjust($primary-hover, $lightness: -10%));
+      background: linear-gradient(135deg, $primary-hover, lighten-color($primary-hover, -10%));
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba($primary-color, 0.2);
     }
@@ -135,7 +121,7 @@ $radius-sm: 8px;
       cursor: not-allowed;
       transform: none !important;
       box-shadow: none !important;
-      background: linear-gradient(135deg, $primary-disabled, color.adjust($primary-disabled, $lightness: -10%));
+      background: linear-gradient(135deg, $form-disabled-bg, lighten-color($form-disabled-bg, -10%));
     }
   }
 
@@ -156,7 +142,6 @@ $radius-sm: 8px;
   }
 }
 
-// Адаптивность для FormSearch
 @media (max-width: 768px) {
   .form-search {
     &__input {
@@ -200,7 +185,6 @@ $radius-sm: 8px;
   }
 }
 
-// Темная тема
 @media (prefers-color-scheme: dark) {
   .form-search {
     &__input {

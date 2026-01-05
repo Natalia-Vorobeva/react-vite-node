@@ -22,25 +22,21 @@ function RightColumn({ searchQuery = '', searchResults = [] }) {
 		setSortedArr(filter)
 	}, [btnFilterFavourites, rightCol])
 
-	// Фильтрация по поиску
 	const [filteredMessages, setFilteredMessages] = useState([]);
 	const [filteredFavorites, setFilteredFavorites] = useState([]);
 
 	useEffect(() => {
 		if (searchQuery && searchResults.length > 0) {
-			// Используем результаты поиска
 			setFilteredMessages(searchResults);
 			const filteredFavs = searchResults.filter(el => el.liked === true);
 			setFilteredFavorites(filteredFavs);
 		} else {
-			// Используем все сообщения
 			setFilteredMessages(rightCol);
 			const filteredFavs = rightCol.filter(el => el.liked === true);
 			setFilteredFavorites(filteredFavs);
 		}
 	}, [searchQuery, searchResults, rightCol]);
 
-	// удаление карточки
 	function handleDelCard(data) {
 		dispatch(handleDeleteCard({
 			object: data,
@@ -49,7 +45,6 @@ function RightColumn({ searchQuery = '', searchResults = [] }) {
 		if (isModal) { dispatch(setIsModal(false)) }
 	}
 
-	// добавление в избранное
 	const handleFavourites = (data) => {
 		let el
 		if ('liked' in data == false) {
@@ -106,13 +101,15 @@ function RightColumn({ searchQuery = '', searchResults = [] }) {
 	return (
 		<div className="right-column">
 			<div className="right-column__wrapper">
-				{searchQuery && (
+				{(searchQuery || !btnFilterFavourites) && (
 					<div className="column-base__search-info">
-						{/* Поиск: "{searchQuery}"  */}
-						• Найдено: {filteredMessages.length}
+						{searchQuery
+							? `• Найдено: ${filteredMessages.length}`
+							: `• Избранных: ${filteredFavorites.length}`
+						}
 					</div>
 				)}
-				
+
 				{btnFilterFavourites
 					? renderCards(filteredMessages)
 					: renderCards(filteredFavorites)

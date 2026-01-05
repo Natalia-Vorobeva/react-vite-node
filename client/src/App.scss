@@ -1,20 +1,5 @@
-@use "sass:color";
+@use "./assets/styles/variables" as *;
 
-// Переменные для цветовой схемы
-$primary-color: #6366f1;
-$primary-hover: #4f46e5;
-$primary-disabled: #a5b4fc;
-$bg-light: #f8fafc;
-$bg-white: #ffffff;
-$text-primary: #1e293b;
-$text-secondary: #64748b;
-$border-color: #e2e8f0;
-$shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-$radius: 12px;
-$radius-sm: 8px;
-
-// Анимации
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -68,11 +53,10 @@ $radius-sm: 8px;
   }
 }
 
-// Основные стили
 .app {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 15px;
+  padding: $spacing-md;
   overflow: hidden;
   position: relative;
 
@@ -83,15 +67,15 @@ $radius-sm: 8px;
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 70%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
     pointer-events: none;
   }
 
   &__content {
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
-    border-radius: $radius;
+    border-radius: $border-radius-lg;
     box-shadow: $shadow-lg;
     height: calc(100vh - 30px);
     display: flex;
@@ -102,54 +86,54 @@ $radius-sm: 8px;
   }
 
   &__control-header {
-    background: $bg-white;
+    background: $bg-primary;
     border-bottom: 1px solid $border-color;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     position: relative;
-    z-index: 10;
-    padding: 15px 20px;
+    z-index: $z-index-sticky;
+    padding: $spacing-md $spacing-lg;
   }
 
   &__header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: $spacing-md;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: $spacing-md;
   }
 
   &__title {
     color: $text-primary;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
     margin: 0;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: $spacing-xs;
     white-space: nowrap;
 
     &-span {
-      color: #ef4444;
+      color: $heart-color;
       animation: pulse 2s infinite;
       display: inline-block;
     }
   }
 
   &__search-container {
-		position: relative;
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: $spacing-sm;
     flex: 1;
     min-width: 0;
     max-width: 500px;
     
-    @media (max-width: 768px) {
+    @media (max-width: $breakpoint-md) {
       max-width: none;
       width: 100%;
       order: 3;
-      margin-top: 10px;
+      margin-top: $spacing-sm;
     }
   }
 
@@ -159,21 +143,15 @@ $radius-sm: 8px;
   }
 
   &__search-info {
-		position: absolute;
-		bottom: -100%;
-		left: 0;
-		color: #808080;
-    // display: flex;
-    // align-items: center;
-    // gap: 8px;
-    // background: $bg-light;
-    padding: 8px 14px;
-    border-radius: $radius-sm;
+		font-size: $font-size-sm;
+    position: absolute;
+    bottom: -50%;
+    left: 0;
+    color: $text-muted;
     animation: slideDown 0.3s ease-out;
-    // border: 2px solid $border-color;
     align-self: flex-start;
     
-    @media (max-width: 768px) {
+    @media (max-width: $breakpoint-md) {
       align-self: stretch;
       justify-content: center;
     }
@@ -182,42 +160,43 @@ $radius-sm: 8px;
   &__length {
     margin: 0;
     color: $text-secondary;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
     white-space: nowrap;
   }
 
   &__header-bottom {
-    margin-top: 10px;
+    margin-top: $spacing-sm;
   }
 
   &__header-content {
     display: flex;
-    gap: 12px;
+    gap: $spacing-sm;
     align-items: center;
     flex-wrap: wrap;
   }
 
   &__button-load {
     background: linear-gradient(135deg, $primary-color, $primary-hover);
-    color: white;
+    color: $text-inverse;
     border: none;
-    padding: 8px 16px;
-    border-radius: $radius-sm;
-    font-weight: 600;
+    padding: $spacing-sm $spacing-md;
+    
+    border-radius: $radius-sm 0 0 $radius-sm;
+    font-weight: $font-weight-semibold;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all $transition-base;
     display: flex;
     align-items: center;
-    gap: 6px;
-    box-shadow: $shadow;
-    font-size: 14px;
+    gap: $spacing-xs;
+    box-shadow: $shadow-md;
+    font-size: $font-size-sm;
     flex-shrink: 0;
 
     &:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: $shadow-lg;
-      background: linear-gradient(135deg, $primary-hover, color.adjust($primary-hover, $lightness: -10%));
+      background: linear-gradient(135deg, $primary-hover, $primary-hover-dark);
     }
 
     &:active:not(:disabled) {
@@ -227,15 +206,15 @@ $radius-sm: 8px;
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      background: linear-gradient(135deg, $primary-disabled, color.adjust($primary-disabled, $lightness: -10%));
+      background: linear-gradient(135deg, $btn-disabled-bg, lighten-color($btn-disabled-bg, 10%));
       transform: none !important;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
     }
 
     &-icon {
-      font-size: 16px;
+      font-size: $font-size-base;
       display: inline-block;
-      transition: transform 0.3s ease;
+      transition: transform $transition-base;
     }
 
     &:hover:not(:disabled) &-icon {
@@ -253,24 +232,24 @@ $radius-sm: 8px;
 
   &__sort-buttons {
     display: flex;
-    gap: 8px;
+    gap: $spacing-sm;
     flex-wrap: wrap;
   }
 
   &__button-sort-toggle,
   &__button-filter-toggle {
-    background: $bg-light;
-    border: 2px solid $border-color;
-    border-radius: $radius-sm;
-    padding: 8px 14px;
-    font-weight: 600;
+    background: $bg-secondary;
+    border: 2px solid $border-color;    
+    border-radius: $radius-sm 0 0 $radius-sm;		
+		padding: calc($spacing-sm - 2px) $spacing-md;
+    font-weight: $font-weight-semibold;
     color: $text-secondary;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all $transition-base;
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 14px;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
     flex-shrink: 0;
 
     &:hover {
@@ -285,8 +264,8 @@ $radius-sm: 8px;
   }
 
   &__button-sort-icon {
-    font-size: 16px;
-    transition: transform 0.3s ease;
+    font-size: $font-size-base;
+    transition: transform $transition-base;
     
     &_reverse {
       transform: rotate(180deg);
@@ -294,19 +273,20 @@ $radius-sm: 8px;
   }
 
   &__button-filter-icon {
-    font-size: 16px;
-    color: #fbbf24;
-    transition: all 0.3s ease;
+    font-size: $font-size-base;
+    color: $star-color;
+    transition: all $transition-base;
     
     &_active {
-      color: #f59e0b;
-      text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+      color: $star-color-active;
+      text-shadow: 0 0 8px rgba($star-color-active, 0.3);
     }
   }
 
   &__button-sort-text,
   &__button-filter-text {
     white-space: nowrap;
+		padding: 0;
   }
 
   &__columns {
@@ -316,7 +296,6 @@ $radius-sm: 8px;
     overflow: hidden;
     position: relative;
     
-    // Адаптивность для колонок
     @media (max-width: 900px) {
       &.horizontal-scroll {
         display: flex;
@@ -339,131 +318,128 @@ $radius-sm: 8px;
     }
   }
 
-	&__column-tabs {
-  display: none;
-  
-  @media (max-width: 900px) {
-    display: flex;
-    background: $bg-white;
-    border-bottom: 1px solid $border-color;
-    padding: 0 10px;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0 5px;
-  }
-}
-
-&__column-tab {
-  flex: 1;
-  padding: 12px 8px;
-  border: none;
-  background: none;
-  font-size: 14px;
-  font-weight: 500;
-  color: $text-secondary;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  
-  &:hover {
-    color: $text-primary;
-    background: rgba($primary-color, 0.05);
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: transparent;
-    border-radius: 1px;
-    transition: all 0.2s ease;
-  }
-  
-  &_active {
-    color: $primary-color;
-    font-weight: 600;
+  &__column-tabs {
+    display: none;
     
-    &::after {
-      background: $primary-color;
-      left: 5%;
-      right: 5%;
+    @media (max-width: 900px) {
+      display: flex;
+      background: $bg-primary;
+      border-bottom: 1px solid $border-color;
+      padding: 0 $spacing-sm;
+      position: sticky;
+      top: 0;
+      z-index: $z-index-fixed;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    @media (max-width: 480px) {
+      padding: 0 $spacing-xs;
     }
   }
-  
-  @media (max-width: 768px) {
-    padding: 10px 6px;
-    font-size: 13px;
-    flex-direction: column;
-    gap: 2px;
+
+  &__column-tab {
+    flex: 1;
+    padding: $spacing-sm $spacing-sm;
+    border: none;
+    background: none;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: all $transition-fast;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    
+    &:hover {
+      color: $text-primary;
+      background: rgba($primary-color, 0.05);
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: transparent;
+      border-radius: 1px;
+      transition: all $transition-fast;
+    }
+    
+    &_active {
+      color: $primary-color;
+      font-weight: $font-weight-semibold;
+      
+      &::after {
+        background: $primary-color;
+        left: 5%;
+        right: 5%;
+      }
+    }
+    
+    @media (max-width: $breakpoint-md) {
+      padding: $spacing-sm $spacing-xs;
+      font-size: $font-size-sm;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    @media (max-width: 480px) {
+      padding: $spacing-xs $spacing-xs;
+      font-size: $font-size-xs;
+    }
   }
-  
-  @media (max-width: 480px) {
-    padding: 8px 4px;
-    font-size: 12px;
+
+  &__column-tab-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    @media (max-width: $breakpoint-md) {
+      font-size: $font-size-xs;
+    }
+  }
+
+  &__column-tab-count {
+    font-size: $font-size-xs;
+    opacity: 0.8;
+    font-weight: $font-weight-normal;
+    
+    @media (max-width: $breakpoint-md) {
+      font-size: $font-size-xs - 1;
+    }
   }
 }
 
-&__column-tab-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-}
-
-&__column-tab-count {
-  font-size: 12px;
-  opacity: 0.8;
-  font-weight: normal;
-  
-  @media (max-width: 768px) {
-    font-size: 11px;
-  }
-}
-}
-
-// Адаптивность
-
-// Планшет (до 900px)
 @media (max-width: 900px) {
   .app {
-    padding: 10px;
+    padding: $spacing-sm;
     
     &__content {
       height: calc(100vh - 20px);
     }
     
     &__control-header {
-      padding: 12px 15px;
+      padding: $spacing-sm $spacing-md;
     }
     
     &__title {
-      font-size: 18px;
+      font-size: $font-size-lg;
     }
     
     &__header-top {
       flex-direction: column;
       align-items: stretch;
-      gap: 12px;
+      gap: $spacing-sm;
     }
     
     &__search-container {
       max-width: none;
-      margin-top: 5px;
+      margin-top: $spacing-xs;
     }
     
     &__columns {
@@ -482,7 +458,7 @@ $radius-sm: 8px;
     &__header-content {
       flex-direction: column;
       align-items: stretch;
-      gap: 10px;
+      gap: $spacing-sm;
     }
     
     &__sort-buttons {
@@ -498,8 +474,7 @@ $radius-sm: 8px;
   }
 }
 
-// Мобильные (до 768px)
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .app {
     &__button-load {
       width: 100%;
@@ -507,15 +482,14 @@ $radius-sm: 8px;
     }
     
     &__search-container {
-      margin-top: 10px;
+      margin-top: $spacing-sm;
     }
   }
 }
 
-// Маленькие мобильные (до 480px)
 @media (max-width: 480px) {
   .app {
-    padding: 8px;
+    padding: $spacing-sm;
     
     &__content {
       height: calc(100vh - 16px);
@@ -523,39 +497,35 @@ $radius-sm: 8px;
     }
     
     &__control-header {
-      padding: 10px;
+      padding: $spacing-sm;
     }
     
     &__title {
-      font-size: 16px;
+      font-size: $font-size-base;
     }
     
     &__button-load,
     &__button-sort-toggle,
     &__button-filter-toggle {
-      padding: 7px 12px;
-      font-size: 13px;
+      padding: $spacing-xs $spacing-sm;
+      font-size: $font-size-xs;
+			// padding: 0;
     }
     
-    &__search-info {
-      padding: 6px 12px;
-    }
-    
-    &__length {
-      font-size: 13px;
+    &__search-info {			
+      font-size: $font-size-xs;
     }
     
     &__button-sort-text,
     &__button-filter-text {
-      font-size: 12px;
+      font-size: $font-size-xs;
     }
   }
 }
 
-// Очень маленькие мобильные (до 320px)
 @media (max-width: 320px) {
   .app {
-    padding: 5px;
+    padding: $spacing-xs;
     
     &__content {
       height: calc(100vh - 10px);
@@ -563,26 +533,26 @@ $radius-sm: 8px;
     }
     
     &__control-header {
-      padding: 8px;
+      padding: $spacing-sm;
     }
     
     &__title {
-      font-size: 15px;
+      font-size: $font-size-base - 1;
       flex-wrap: wrap;
       gap: 3px;
     }
     
     &__header-top {
-      gap: 8px;
+      gap: $spacing-xs;
     }
     
     &__search-container {
-      gap: 6px;
-      margin-top: 8px;
+      gap: $spacing-xs;
+      margin-top: $spacing-xs;
     }
     
     &__search-info {
-      padding: 5px 10px;
+      font-size: $font-size-xs;
       width: 100%;
       justify-content: center;
     }
@@ -590,21 +560,21 @@ $radius-sm: 8px;
     &__button-load,
     &__button-sort-toggle,
     &__button-filter-toggle {
-      padding: 6px 10px;
-      font-size: 12px;
+      padding: $spacing-xs $spacing-xs;
+      font-size: $font-size-xs - 1;
     }
     
     &__button-sort-icon,
     &__button-filter-icon {
-      font-size: 14px;
+      font-size: $font-size-sm;
     }
     
     &__header-content {
-      gap: 8px;
+      gap: $spacing-xs;
     }
     
     &__sort-buttons {
-      gap: 6px;
+      gap: $spacing-xs;
     }
     
     &__columns {
@@ -619,36 +589,36 @@ $radius-sm: 8px;
     background: linear-gradient(135deg, #4c51bf 0%, #702459 100%);
     
     &__content {
-      background: rgba(30, 41, 59, 0.95);
+      background: rgba($bg-dark, 0.95);
     }
     
     &__control-header {
-      background: #1e293b;
-      border-color: #334155;
+      background: $bg-darker;
+      border-color: lighten-color($bg-dark, 10%);
     }
     
     &__title {
-      color: #f1f5f9;
+      color: $text-inverse;
     }
     
     &__search-info {
-      background: #334155;
-      border-color: #475569;
+      background: lighten-color($bg-dark, 10%);
+      border-color: lighten-color($bg-dark, 15%);
     }
     
     &__length {
-      color: #cbd5e1;
+      color: lighten-color($text-secondary, 30%);
     }
     
     &__button-sort-toggle,
     &__button-filter-toggle {
-      background: #334155;
-      border-color: #475569;
-      color: #cbd5e1;
+      background: lighten-color($bg-dark, 10%);
+      border-color: lighten-color($bg-dark, 15%);
+      color: lighten-color($text-secondary, 30%);
       
       &:hover {
-        border-color: #6366f1;
-        color: #f1f5f9;
+        border-color: $primary-color;
+        color: $text-inverse;
       }
     }
   }

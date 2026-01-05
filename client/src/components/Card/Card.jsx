@@ -16,21 +16,24 @@ function Card({
 	column,
 	className,
 	handleDelCard,
-	handleFavourites
+	handleFavourites,
+	onMoveCard
 }) {
 
 	const dispatch = useDispatch()
 	const isModal = useSelector(apiSelectors.getIsModal)
+	const choice = useSelector(apiSelectors.getChoice) // Получаем выбранную карточку
 	const [isPending, startTransition] = useTransition()
 	const outsideClickRef = useRef(null)
-	const [commentOn, setCommentOn] = useState(false)
 	const [dimensions, setDimensions] = useState(true)
 	const [menu, setMenu] = useState(false)
 	const [outsideMenu, setOutsideMenu] = useState(false)
 	const [visibleContent, setVisibleContent] = useState(true)
 	const [confirmation, setConfirmation] = useState(true)
 	const [symbolCopy, setSymbolCopy] = useState('⧉')
-	console.log('%cDATA', 'color: purple', dimensions, 'dimensions', visibleContent, 'visibleContent')
+
+	// Определяем, является ли эта карточка выбранной для модального окна
+	const isCardSelected = choice?.object?.id === data.id && isModal
 
 	useEffect(() => {
 		function handleClickOutside(e) {
@@ -55,8 +58,6 @@ function Card({
 		setOutsideMenu(menu)
 	}, [menu])
 
-
-
 	const handleClipboard = (text) => {
 		setSymbolCopy('✔')
 		startTransition(async function () {
@@ -73,7 +74,6 @@ function Card({
 		handleDelCard(data)
 	}
 
-	// изменение размера карточки по иконке
 	const handleDimensionsIcon = () => {
 		setDimensions(!dimensions)
 		setVisibleContent(!visibleContent)
@@ -87,9 +87,8 @@ function Card({
 		setMenu(false)
 	}
 
-	// открытие popup 
 	const handleCommentOn = (data) => {
-		setCommentOn(true)
+		// Открываем модальное окно в Redux
 		dispatch(setIsModal(true))
 		dispatch(setChoice(
 			{
@@ -97,25 +96,27 @@ function Card({
 				column,
 				time
 			}))
+		
+		// Разворачиваем карточку
+		setVisibleContent(false)
+		setDimensions(false)
 	}
 
 	const handleVisibleContent = () => {
 		setVisibleContent(false)
-		setDimensions(false) 
+		setDimensions(false)
 	}
 
+	// Сброс состояния при закрытии модального окна, если эта карточка была выбрана
 	useEffect(() => {
-		console.log('%cDATA', 'color: purple', visibleContent, isModal, 'visibleContent, isModal');
-	}, [visibleContent, isModal]);
-
-	// В модальном окне всегда показываем полный текст
-	useEffect(() => {
-		if (isModal) {
-			setVisibleContent(false)
-			setDimensions(false)
+		if (!isModal && isCardSelected) {
+			// Можно восстановить исходное состояние или оставить как есть
+			// setVisibleContent(true)
+			// setDimensions(true)
 		}
-	}, [isModal])
+	}, [isModal, isCardSelected])
 
+	console.log('%cDATA', 'color: purple', {isModal, isCardSelected, cardId: data.id, choiceId: choice?.object?.id})
 
 	return (
 		<section className={`card ${dimensions ? 'card_mini' : ''}`}>
@@ -130,24 +131,25 @@ function Card({
 					<div className="card__column-content-header">
 						<div className="card__column-content-author">
 							<h2 className="card__title">{data.author}</h2>
-							{visibleContent == false || !isModal && (
+							{visibleContent == true && (
 								<h2 className="card__subtitle card__subtitle_mini">{data.content}</h2>
 							)}
 						</div>
 						<div className="card__column-content-buttons">
 							{
-								isModal ?
+								// Показываем кнопку копирования ТОЛЬКО для выбранной карточки
+								isCardSelected ?
 									<div onClick={() => handleClipboard(data.content)} className="card__copy">{symbolCopy}</div>
 									:
 									<div className="card__icons">
 										<img
 											onClick={() => handleCommentOn(data)}
 											src={comment} alt="Комментировать"
-											className={`card__icon card__icon_type_comment${isModal ? "_visible" : ""} card__icon_type_comment${commentOn ? '_active' : ''} `} />
+											className={`card__icon card__icon_type_comment${isCardSelected ? '_active' : ''}`} />
 										<img
 											onClick={handleDimensionsIcon}
 											src={hide} alt="Изменить размеры"
-											className={`card__icon card__icon_type_dimensions${!dimensions ? '_active' : ''} ${isModal ? "opacity" : ""}`} />
+											className={`card__icon card__icon_type_dimensions${!dimensions ? '_active' : ''} ${isCardSelected ? "opacity" : ""}`} />
 										<div className="card__wrapper-button-settings" ref={outsideClickRef}>
 											<img
 												onClick={toggleMenu}
@@ -170,34 +172,29 @@ function Card({
 												</div>
 											</div>
 										</div>
-										<img src={like} alt="В избранное" onClick={() => handleFavourites(data)} className={` card__icon card__icon_type_favourites${data.liked == true ? "_active" : "_no-active"}  ${isModal ? "opacity" : ""}`} />
+										<img src={like} alt="В избранное" onClick={() => handleFavourites(data)} className={` card__icon card__icon_type_favourites${data.liked == true ? "_active" : "_no-active"}  ${isCardSelected ? "opacity" : ""}`} />
 									</div>
 							}
 
 							<div className={`card__control-card card__control-card${className}`}>
 								{
-									!isModal && <div className="card__buttons">
+									// Показываем кнопки перемещения ТОЛЬКО если карточка не выбрана
+									!isCardSelected && <div className="card__buttons">
 										<Button id="left" buttonName="left" data={data} column={column}
-											className={`${column == "left" ? "button_inactive " : ""} ${isModal ? "" : "button_mini"}`} btnText="Левый" />
+											onMoveCard={onMoveCard} className={`${column == "left" ? "button_inactive " : ""} ${isCardSelected ? "" : "button_mini"}`} btnText="Левый" />
 										<Button id="central" buttonName="central" data={data} column={column}
-											className={`${column == "central" ? "button_inactive" : ""} ${isModal ? "" : "button_mini"}`} btnText="Центр" />
+											onMoveCard={onMoveCard} className={`${column == "central" ? "button_inactive" : ""} ${isCardSelected ? "" : "button_mini"}`} btnText="Центр" />
 										<Button id="right" buttonName="right" data={data} column={column}
-											className={`${column == "right" ? "button_inactive" : ""} ${isModal ? "" : "button_mini"}`} btnText="Правый" />
+											onMoveCard={onMoveCard} className={`${column == "right" ? "button_inactive" : ""} ${isCardSelected ? "" : "button_mini"}`} btnText="Правый" />
 									</div>
 								}
 							</div>
 						</div>
 					</div>
-
-
-
-
-
-					{/* !!!! Далее  */}
 					<div className="card__column-content-data">
 						{
-							// dimensions && data.content && data.content.trim() && 
-							visibleContent == true && dimensions == true ?
+							visibleContent == true && !isCardSelected
+								?
 								(
 									<div onClick={handleVisibleContent} className="card__more">Далее</div>
 								)

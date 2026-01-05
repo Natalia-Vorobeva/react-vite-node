@@ -18,7 +18,7 @@ export const apiSlice = createSlice({
 
 	reducers: {
 		setLastId: (state, action) => {
-			state.id = action.payload
+			state.idLast = action.payload
 		},
 		setChoice: (state, action) => {
 			state.choice = action.payload
@@ -32,25 +32,42 @@ export const apiSlice = createSlice({
 		},
 
 		setDataMessages: (state, action) => {
-			// модификация даты и сортировка массива по дате
-			let arrModified = action.payload.map(object => {
-				const dateModified = object.date.replace(/ /g, 'T').concat("Z")
-				return { ...object, date: dateModified }
-			})
-			arrModified.sort((a, b) => {
-				return new Date(b.date) - new Date(a.date)
-			})
-			const ids = arrModified.map(object => object.id)
-			let id = Math.max(...ids)
-			// получаем самое большое id 
-			state.idLast = id
-			state.dataMessages.centralCol = arrModified
+	let arrModified = action.payload.map(object => {
+		const dateModified = object.date.replace(/ /g, 'T').concat("Z")
+		return { ...object, date: dateModified }
+	})
+	
+	// Сортируем по дате (новые сверху по умолчанию)
+	arrModified.sort((a, b) => {
+		return new Date(b.date) - new Date(a.date)
+	})
+	
+	const ids = arrModified.map(object => object.id)
+	let id = Math.max(...ids)
+	
+	state.idLast = id
+	state.dataMessages.centralCol = arrModified
+},
 
-		},
-
-		setNewMessages: (state, action) => {			
-			state.dataMessages = action.payload
-		},
+	setNewMessages: (state, action) => {
+	// Сравниваем текущие и новые данные
+	const currentCentralCol = state.dataMessages.centralCol
+	const newCentralCol = action.payload.centralCol
+	
+	// Проверяем, действительно ли есть изменения
+	if (JSON.stringify(currentCentralCol) !== JSON.stringify(newCentralCol)) {
+		state.dataMessages = {
+			...state.dataMessages,
+			centralCol: newCentralCol
+		}
+		
+		// Обновляем idLast если есть новые сообщения
+		if (newCentralCol.length > 0) {
+			const ids = newCentralCol.map(msg => msg.id)
+			state.idLast = Math.max(...ids)
+		}
+	}
+},
 
 		setOldMessages: (state, action) => {
 			const initialArr = state.dataMessages.centralCol
@@ -64,7 +81,7 @@ export const apiSlice = createSlice({
 			})
 			state.dataMessages.centralCol = arrModified
 		},
-		
+
 		handleButton: (state, action) => {
 			const payload = action.payload
 			const filterData = (data) => data.filter((element) => JSON.stringify(element) !== JSON.stringify(action.payload.object))
@@ -140,14 +157,14 @@ export const apiSlice = createSlice({
 
 		onToggleReverse: (state, action) => {
 			state.isReverse = action.payload
-			const reverseLeft = state.dataMessages.leftCol.reverse()
-			const reverseCentral = state.dataMessages.centralCol.reverse()
-			const reverseRight = state.dataMessages.rightCol.reverse()
-			state.dataMessages = {
-				leftCol: reverseLeft,
-				centralCol: reverseCentral,
-				rightCol: reverseRight,
-			}
+			// const reverseLeft = state.dataMessages.leftCol.reverse()
+			// const reverseCentral = state.dataMessages.centralCol.reverse()
+			// const reverseRight = state.dataMessages.rightCol.reverse()
+			// state.dataMessages = {
+			// 	leftCol: reverseLeft,
+			// 	centralCol: reverseCentral,
+			// 	rightCol: reverseRight,
+			// }
 		}
 	}
 })

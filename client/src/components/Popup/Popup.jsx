@@ -4,83 +4,123 @@ import Comment from '../Comment/Comment';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleAddingFavourires, handleDeleteCard, setIsModal } from '../../store/api/apiSlice';
 import { apiSelectors } from '../../store/api/apiSelectors';
-import './Popup.scss';
 import Comments from '../Comments/Comments';
-
+import './Popup.scss';
 
 function Popup() {
-	const ref = useRef(null)
-	const dispatch = useDispatch()
-	const isModal = useSelector(apiSelectors.getIsModal)
-	const choice = useSelector(apiSelectors.getChoice)
-	const [comments, setComments] = useState([])
+	const containerRef = useRef(null); // Используем ref для контейнера
+	const wrapperRef = useRef(null);
+	const dispatch = useDispatch();
+	const isModal = useSelector(apiSelectors.getIsModal);
+	const choice = useSelector(apiSelectors.getChoice);
+	const [comments, setComments] = useState([]);
+	const [isMounted, setIsMounted] = useState(false);
 
 	const handleFilterComments = (currIndex) => {
 		setComments(prevState => {
-			const newArray = [...prevState]
-			newArray.splice(currIndex, 1)
-			return newArray
-		})
-	}
+			const newArray = [...prevState];
+			newArray.splice(currIndex, 1);
+			return newArray;
+		});
+	};
 
-	const memoizedFilter = useCallback(handleFilterComments, [comments])
+	const memoizedFilter = useCallback(handleFilterComments, []);
+
+	// Обработчик клика вне контейнера
+	useEffect(() => {
+		const handleClickOutside = (e) => {
+			// Закрываем попап, если клик был вне контейнера
+			if (containerRef.current && !containerRef.current.contains(e.target)) {
+				dispatch(setIsModal(false));
+			}
+		};
+
+		if (isModal) {
+			// Небольшая задержка, чтобы обработчик не сработал на тот же клик, который открыл попап
+			const timer = setTimeout(() => {
+				document.addEventListener('click', handleClickOutside);
+			}, 0);
+
+			return () => {
+				clearTimeout(timer);
+				document.removeEventListener('click', handleClickOutside);
+			};
+		}
+	}, [isModal, dispatch]);
 
 	useEffect(() => {
 		if (isModal) {
-			document.addEventListener('keydown', handleEscClose)
+			setIsMounted(true);
+		} else {
+			setIsMounted(false);
 		}
-		return () => {
-			document.removeEventListener('keydown', handleEscClose)
-		}
-	}, [isModal])
-
-	function handleEscClose(evt) {
-		if (evt.key === 'Escape') {
-			dispatch(setIsModal(false))
-		}
-	}
+	}, [isModal]);
 
 	useEffect(() => {
-		const onClick = e => {
-			if (!ref.current.contains(e.target) == false) {
-				dispatch(setIsModal(false))
+		const handleEscClose = (evt) => {
+			if (evt.key === 'Escape') {
+				dispatch(setIsModal(false));
 			}
+		};
+
+		if (isModal) {
+			document.addEventListener('keydown', handleEscClose);
 		}
-		document.addEventListener('click', onClick);
-		return () => document.removeEventListener('click', onClick)
-	}, [])
+
+		return () => {
+			document.removeEventListener('keydown', handleEscClose);
+		};
+	}, [isModal, dispatch]);
 
 	const handleDelCard = () => {
-		dispatch(handleDeleteCard(choice))
-		if (isModal) { dispatch(setIsModal(false)) }
-	}
+		dispatch(handleDeleteCard(choice));
+		dispatch(setIsModal(false));
+	};
 
 	const handleFavourites = () => {
-		dispatch(handleAddingFavourires(choice))
-	}
-	function onSubmit(e, value) {
-		e.preventDefault()
-		setComments((prevState) => [...prevState, value])
-	}
+		dispatch(handleAddingFavourires(choice));
+	};
+
+	const onSubmit = (e, value) => {
+		e.preventDefault();
+		if (value.trim()) {
+			setComments((prevState) => [...prevState, value]);
+		}
+	};
+
+	if (!isMounted || !choice?.object) return null;
 
 	return (
 		<section className={`popup ${isModal ? 'popup_showed' : ''}`}>
-			<div ref={ref} className="popup__overlay"></div>
-			<div className="popup__container">
+			<div className="popup__overlay"></div>
+			<div ref={containerRef} className="popup__container"> {/* ref теперь на контейнере */}
+				<div className="popup__inner">
+					<button
+						onClick={() => dispatch(setIsModal(false))}
+						className="popup__close"
+						aria-label="Закрыть попап"
+					>
+						×
+					</button>
 
-				<p onClick={() => dispatch(setIsModal(false))} className="popup__close">×</p>
-				<div className="popup__wrapper">
-					<Card time={choice.time} handleFavourites={handleFavourites} handleDelCard={handleDelCard} column={choice.column} data={choice.object} />
-					{/* <div className="popup__wrapper-comments"> */}
-				</div>
-				<div className="popup__list">
-					<Comments comments={comments} handleFilterComments={memoizedFilter} />
-				</div>
-				<div className="popup__input">
-					<Comment onSubmit={onSubmit} />
-				</div>
-				{/* </div> */}
+					<div ref={wrapperRef} className="popup__wrapper">
+						<Card
+							time={choice.time}
+							handleFavourites={handleFavourites}
+							handleDelCard={handleDelCard}
+							column={choice.column}
+							data={choice.object}
+						/>
+					</div>
 
+					<div className="popup__list">
+						<Comments comments={comments} handleFilterComments={memoizedFilter} />
+					</div>
+
+					<div className="popup__input">
+						<Comment onSubmit={onSubmit} />
+					</div>
+				</div>
 			</div>
 		</section>
 	);

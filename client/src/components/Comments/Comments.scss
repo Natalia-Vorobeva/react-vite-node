@@ -1,3 +1,7 @@
+// @use "sass:map";
+// @import "../../assets/styles/variables";
+@use "../../assets/styles/variables" as *;
+
 .comments {
   display: flex;
   flex-direction: column;
@@ -18,7 +22,6 @@
       transform: translateY(-1px);
     }
   }
-	
   
   &__user {
     font-size: 0.85rem;
@@ -120,6 +123,10 @@
       transform: translateY(0);
     }
   }
+
+	&__empty {
+		color: $text-light;
+	}
   
   // Анимация появления комментария
   @keyframes fadeIn {
@@ -134,7 +141,6 @@
   }
 }
 
-// Адаптивность для Comments
 @media (max-width: 768px) {
   .comments {
     gap: 1rem;
@@ -199,7 +205,6 @@
   }
 }
 
-// Темная тема для Comments
 @media (prefers-color-scheme: dark) {
   .comments {
     &__element {

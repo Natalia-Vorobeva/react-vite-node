@@ -2,7 +2,6 @@ import avatar from '../../assets/images/avatar.png';
 import './Comments.scss';
 
 function Comments({ comments, handleFilterComments, name = 'Воробьева Наталья' }) {
-		// Lorem ipsum dolor sit, amet consectetur adipisicing elit. Harum in reprehenderit, doloremque assumenda deserunt laboriosam nostrum officia tempora fugiat. Labore ad dolor perferendis recusandae architecto eligendi sunt quas reprehenderit repellat earum magnam minus, deleniti quo officia sapiente placeat, laboriosam dignissimos. Quasi alias doloribus quo incidunt debitis eaque, facere harum porro.
   return (
 		
     <div className="comments">

@@ -87,32 +87,32 @@ function App() {
 	}, [])
 
 	// получение новых сообщений
-	// async function fetchAPIData() {
-	// 	try {
-	// 		const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
-	// 		if (!response.ok) throw new Error('Ошибка сети')
-	// 		const data = await response.json()
-	// 		if (typeof data !== 'string') {
-	// 			let arrModified = data.Messages.map(object => {
-	// 				let dateModified = object.date.replace(/ /g, 'T').concat("Z")
-	// 				return { ...object, date: dateModified }
-	// 			})
-	// 			let arr = [...dataMessages.centralCol, ...arrModified]
-	// 			arr.sort((a, b) => {
-	// 				return new Date(b.date) - new Date(a.date)
-	// 			})
-	// 			const ids = arr.map(object => object.id)
-	// 			let id = Math.max(...ids)
-	// 			dispatch(setLastId(id))
-	// 			dispatch(setNewMessages({ ...dataMessages, centralCol: arr }))
-	// 		} else {
-	// 			return
-	// 		}
-	// 	}
-	// 	catch (err) {
-	// 		console.log('Ошибка:', err)
-	// 	}
-	// }
+	async function fetchAPIData() {
+		try {
+			const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
+			if (!response.ok) throw new Error('Ошибка сети')
+			const data = await response.json()
+			if (typeof data !== 'string') {
+				let arrModified = data.Messages.map(object => {
+					let dateModified = object.date.replace(/ /g, 'T').concat("Z")
+					return { ...object, date: dateModified }
+				})
+				let arr = [...dataMessages.centralCol, ...arrModified]
+				arr.sort((a, b) => {
+					return new Date(b.date) - new Date(a.date)
+				})
+				const ids = arr.map(object => object.id)
+				let id = Math.max(...ids)
+				dispatch(setLastId(id))
+				dispatch(setNewMessages({ ...dataMessages, centralCol: arr }))
+			} else {
+				return
+			}
+		}
+		catch (err) {
+			console.log('Ошибка:', err)
+		}
+	}
 
 	useEffect(() => {
 		const intervalId = setInterval(() => {
@@ -142,9 +142,11 @@ function App() {
 		const columnKey = `${column}Col`;
 		const allMessages = dataMessages[columnKey] || [];
 
-		// Если есть поиск, используем searchData
+		// Если есть поиск, используем актуальные данные
 		if (searchValue) {
-			const searchResults = searchData[columnKey] || [];
+			const searchResults = allMessages.filter(el =>
+				el.content.toLowerCase().includes(searchValue.toLowerCase())
+			);
 			const total = searchResults.length;
 			const favorites = searchResults.filter(el => el.liked).length;
 			return { total, favorites };
@@ -177,6 +179,10 @@ function App() {
 			sum + (Array.isArray(val) ? val.length : 0), 0)
 		setSearchLength(count)
 	}
+
+
+
+
 
 	// Функция для очистки поиска
 	function handleClearSearch() {

@@ -1,21 +1,5 @@
-@use "sass:map";
-@use "sass:color";
+@use "../../assets/styles/variables" as *;
 
-// Переменные
-$accent-color: #4dabf7;
-$danger-color: #fa5252;
-$success-color: #40c057;
-$warning-color: #ff922b;
-$text-primary: #212529;
-$text-secondary: #6c757d;
-$text-light: #adb5bd;
-$like-color: #ef4444;
-$like-hover: #dc2626;
-$border-color: #e2e8f0;
-$bg-light: #f8fafc;
-$accent-color-dark: #3b82f6;
-
-// Анимации
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -48,9 +32,8 @@ $accent-color-dark: #3b82f6;
   background: #d1dae3;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  // margin-bottom: 0.8rem;
   overflow: visible; 
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.4s ease-out;	
   border: 1px solid rgba($border-color, 0.5);	
   
   &:hover {
@@ -60,7 +43,6 @@ $accent-color-dark: #3b82f6;
   }
 
 	&__more {
-		// border: 1px solid #adb5bd;
 		cursor: pointer;
 		position: absolute;
 		top: -1rem;
@@ -75,29 +57,11 @@ $accent-color-dark: #3b82f6;
       
       &:hover {
         opacity: 1;
-        // background: rgba(255, 255, 255, 0.95);
       }
     }
   
   &_mini {
-    // overflow: hidden; // Для мини-карточки оставляем hidden
     position: relative;
-
-		//  &::after {
-    //   content: '';
-    //   position: absolute;
-    //   bottom: 0;
-    //   left: 0;
-    //   right: 0;
-    //   height: 40px; // Уменьшаем высоту градиента
-    //   background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.9) 100%);
-    //   pointer-events: none;
-    //   border-radius: 0 0 12px 12px;
-    // }
-    
-    
-    
-    // Градиент для плавного скрытия текста
     &::after {
       content: '';
       position: absolute;
@@ -134,14 +98,7 @@ $accent-color-dark: #3b82f6;
     flex-direction: column;
     gap: 0.5rem;
     position: relative;
-    width: 100%; // Добавляем ширину 100%
-    
-    // Когда текст раскрыт
-    // .card__subtitle_full {
-    //   width: 100%;
-    //   max-width: 100%;
-    //   flex: 1 1 auto;
-    // }
+    width: 100%; 
   }
   
   &__column-content-header {
@@ -166,10 +123,10 @@ $accent-color-dark: #3b82f6;
     width: 100%;
     position: relative;
     min-height: 1.5rem;
-		// border: 1px solid #000;
   }
 
 	&__copy {
+		pointer-events: auto;
 		position: relative;
 		z-index: 9;
 		margin: 0 3rem 0 0;
@@ -183,7 +140,7 @@ $accent-color-dark: #3b82f6;
     flex-shrink: 0;
     min-width: 0;
     position: relative;
-    z-index: 1000; // Для меню
+    z-index: 1000; 
     
     @media (max-width: 768px) {
       max-width: 100%;
@@ -253,7 +210,6 @@ $accent-color-dark: #3b82f6;
       overflow: hidden;
       text-overflow: ellipsis;
       max-height: 2.8em;
-      // margin-bottom: 0.5rem; // Добавляем отступ для кнопки "Далее"
     }
     
     &_full {
@@ -269,8 +225,7 @@ $accent-color-dark: #3b82f6;
       word-wrap: break-word;
       hyphens: auto;
     }
-  }
-  
+  }  
   
   &__control-card {
     position: relative;
@@ -299,7 +254,6 @@ $accent-color-dark: #3b82f6;
     overflow: visible;
   }
   
-  // Иконки управления карточкой
   &__icons {
     display: flex;
     gap: 0.5rem;
@@ -446,7 +400,6 @@ $accent-color-dark: #3b82f6;
       left: 0;
     }
     
-    // Для мобильных - меню снизу
     @media (max-width: 768px) {
       &_mobile-bottom {
         top: auto;
@@ -490,10 +443,10 @@ $accent-color-dark: #3b82f6;
   }
   
   &__menu-delete {
-    color: $danger-color;
+    color: $warning-color;
     
     &:hover {
-      background: rgba($danger-color, 0.08);
+      background: rgba($warning-color, 0.08);
     }
     
     &_confirmation {
@@ -501,51 +454,7 @@ $accent-color-dark: #3b82f6;
       animation: pulse 1.2s infinite;
     }
   }
-  
-  // &__more {
-  //   cursor: pointer;
-  //   font-size: 0.85rem;
-  //   color: $accent-color;
-  //   display: inline-flex;
-  //   align-items: center;
-  //   gap: 5px;
-  //   padding: 6px 12px;
-  //   background: rgba($accent-color, 0.08);
-  //   border-radius: 8px;
-  //   border: 1px solid rgba($accent-color, 0.2);
-  //   font-weight: 500;
-  //   transition: all 0.2s ease;
-  //   white-space: nowrap;
-  //   text-decoration: none;
-
-	// 	//  &:only-child {
-  //   //   display: none;
-  //   // }
     
-  //   &::after {
-  //     content: '→';
-  //     font-size: 0.9rem;
-  //     transition: transform 0.2s ease;
-  //   }
-    
-  //   &:hover {
-  //     color: $accent-color-dark;
-  //     background: rgba($accent-color, 0.15);
-  //     border-color: rgba($accent-color, 0.3);
-  //     transform: translateX(2px);
-  //     text-decoration: none;
-      
-  //     &::after {
-  //       transform: translateX(2px);
-  //     }
-  //   }
-    
-  //   // Скрываем если нет текста в subtitle
-  //   &:only-child {
-  //     display: none;
-  //   }
-  // }
-  
   &__video {
     width: 100%;
     max-width: 25.9rem;
@@ -563,9 +472,6 @@ $accent-color-dark: #3b82f6;
   pointer-events: none !important;
 }
 
-// ============ АДАПТИВНОСТЬ ============
-
-// Планшет и ниже (до 768px)
 @media (max-width: 768px) {
   .card {
     padding: 0.9rem;
@@ -597,7 +503,7 @@ $accent-color-dark: #3b82f6;
     &__column-content-buttons {
       max-width: 100%;
       width: 100%;
-      order: 3; // Перемещаем кнопки вниз
+      order: 3; 
     }
     
     &__control-card {
@@ -625,7 +531,6 @@ $accent-color-dark: #3b82f6;
       height: 1.8rem;
     }
     
-    // Меню настроек адаптив
     &__menu-wrapper {
       &_mobile-bottom {
         top: auto;
@@ -647,31 +552,17 @@ $accent-color-dark: #3b82f6;
     }
     
     &_mini {
-      // .card__more {
-      //   bottom: 0.5rem;
-      //   left: 0.5rem;
-      //   font-size: 0.8rem;
-      //   padding: 5px 10px;
-      //   z-index: 3; // Выше градиента
-      // }
       
-      // Уменьшаем градиент на мобильных
       &::after {
         height: 40px;
       }
-    }
-    
+    }    
     &__title {
       font-size: 0.9rem;
-    }
-    
-    &__subtitle {
-      // font-size: 0.8rem;
     }
   }
 }
 
-// Большие мобильные (до 480px)
 @media (max-width: 480px) {
   .card {
     padding: 0.8rem;
@@ -687,11 +578,6 @@ $accent-color-dark: #3b82f6;
     &__avatar {
       width: 2.5rem;
       height: 2.5rem;
-    }
-
-		&__subtitle_full {
-      // font-size: 0.8rem;
-      // line-height: 1.4;
     }
     
     &__icons {
@@ -718,21 +604,7 @@ $accent-color-dark: #3b82f6;
       min-width: auto;
       width: 100%;
     }
-    
-    // &__more {
-    //   font-size: 0.75rem;
-    //   padding: 5px 10px;
-    // }
-    
-    &_mini {
-      // .card__more {
-      //   bottom: 0.4rem;
-      //   left: 0.4rem;
-      //   font-size: 0.75rem;
-      //   padding: 4px 8px;
-      // }
-    }
-    
+        
     &__title {
       font-size: 0.85rem;
     }
@@ -740,17 +612,9 @@ $accent-color-dark: #3b82f6;
     &__subtitle {
       font-size: 0.75rem;
     }
-    
-    .button {
-      flex: 1 1 calc(33.333% - 0.4rem);
-      min-width: 0;
-      font-size: 0.7rem;
-      padding: 6px 8px;
-    }
   }
 }
 
-// Маленькие мобильные (до 320px)
 @media (max-width: 320px) {
   .card {
     padding: 0.7rem;
@@ -791,29 +655,8 @@ $accent-color-dark: #3b82f6;
     
     &__buttons {
       gap: 0.3rem;
-    }
-    
-    .button {
-      flex: 1 1 100%;
-      padding: 6px;
-      font-size: 0.65rem;
-      min-height: 30px;
-    }
-    
-    // &__more {
-    //   font-size: 0.7rem;
-    //   padding: 4px 8px;
-    // }
-    
-    &_mini {
-      // .card__more {
-      //   bottom: 0.3rem;
-      //   left: 0.3rem;
-      //   padding: 3px 6px;
-      //   font-size: 0.7rem;
-      // }
-    }
-    
+    }  
+        
     &__title {
       font-size: 0.8rem;
     }
@@ -850,13 +693,9 @@ $accent-color-dark: #3b82f6;
       margin: 0.5rem 0;
       padding-right: 0 !important;
       box-sizing: border-box;
-      
-      // Исправление для узкой полоски текста
       overflow-wrap: break-word;
       word-wrap: break-word;
       hyphens: auto;
-      
-      // Убираем все ограничения
       -webkit-line-clamp: unset !important;
       -webkit-box-orient: unset !important;
       overflow: visible !important;
@@ -864,8 +703,6 @@ $accent-color-dark: #3b82f6;
       max-height: none !important;
     }
   }
-  
-  // Убираем ограничения для контейнера при полном тексте
   &:not(.card_mini) {
     .card__column-content {
       min-width: 0;
@@ -877,23 +714,12 @@ $accent-color-dark: #3b82f6;
       min-width: 100%;
     }
   }
-  
-  // Для мини-карточки
   &_mini {
     .card__subtitle_mini {
       opacity: 1;
       visibility: visible;
       display: -webkit-box;
     }
-    
-    // .card__more {
-    //   position: relative;
-    //   bottom: auto;
-    //   left: auto;
-    //   margin-top: 0.5rem;
-    //   display: inline-block;
-    //   z-index: 3;
-    // }
   }
 }
 }
@@ -920,7 +746,6 @@ $accent-color-dark: #3b82f6;
   }
 }
 
-// Темная тема
 @media (prefers-color-scheme: dark) {
   .card {
     background: #2d3748;
@@ -934,25 +759,10 @@ $accent-color-dark: #3b82f6;
       color: #e2e8f0;
     }
     
-    &__subtitle {
-      // color: #cbd5e0;
-    }
-    
     &__date {
       background: rgba(203, 213, 224, 0.1);
       color: #94a3b8;
     }
-    
-    // &__more {
-    //   background: rgba(66, 153, 225, 0.15);
-    //   border-color: rgba(66, 153, 225, 0.3);
-    //   color: #63b3ed;
-      
-    //   &:hover {
-    //     background: rgba(66, 153, 225, 0.25);
-    //     color: #90cdf4;
-    //   }
-    // }
     
     &_mini::after {
       background: linear-gradient(to bottom, rgba(45,55,72,0) 0%, rgba(45,55,72,0.9) 50%, rgba(45,55,72,1) 100%);
@@ -970,91 +780,6 @@ $accent-color-dark: #3b82f6;
           background: rgba(66, 153, 225, 0.1);
         }
       }
-    }
-  }
-}
-
-// Стили кнопок для карточки
-
-
-// Адаптивность для кнопок
-@media (max-width: 768px) {
-  .button {
-    padding: 7px 10px;
-    font-size: 0.7rem;
-    min-height: 34px;
-    
-    &_mini {
-      padding: 5px 8px;
-      font-size: 0.65rem;
-      min-height: 30px;
-    }
-
-		 &__subtitle_full {
-      // font-size: 0.85rem;
-      // line-height: 1.5;
-      // padding: 0.5rem 0;
-      // width: 100% !important;
-      // max-width: 100% !important;
-      // box-sizing: border-box;
-    }
-    
-    // &__column-content-data {
-    //   // width: 100%;
-		// 	// min-height: auto;
-    //   // margin-top: 0.5rem;
-    // }
-
-		&_mini {
-    .card__subtitle_mini {
-      // Убеждаемся, что текст виден
-      // opacity: 1;
-      // visibility: visible;
-      // display: -webkit-box;
-    }
-    
-    // .card__more {
-    //   position: relative; // Меняем с absolute на relative
-    //   bottom: auto;
-    //   left: auto;
-    //   margin-top: 0.5rem;
-    //   display: inline-block;
-    //   z-index: 3;
-    // }
-    
-    // Уменьшаем градиент для мини-карточки
-    &::after {
-      height: 30px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.8) 100%);
-    }
-  }
-  }
-}
-
-@media (max-width: 480px) {
-  .button {
-    padding: 6px 8px;
-    font-size: 0.65rem;
-    min-height: 32px;
-    
-    &_mini {
-      padding: 4px 6px;
-      font-size: 0.6rem;
-      min-height: 28px;
-    }
-  }
-}
-
-@media (max-width: 320px) {
-  .button {
-    padding: 6px;
-    font-size: 0.6rem;
-    min-height: 30px;
-    
-    &_mini {
-      padding: 3px 5px;
-      font-size: 0.55rem;
-      min-height: 26px;
     }
   }
 }

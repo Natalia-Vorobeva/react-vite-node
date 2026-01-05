@@ -1,20 +1,335 @@
-@use "sass:color";
+// @use "sass:map";
+// @import "../../assets/styles/variables";
+@use "../../assets/styles/variables" as *;
 
-$form-bg: #ffffff;
-$form-border: #e9ecef;
-$form-focus: #4dabf7;
-$form-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-$form-radius: 16px;
-$text-primary: #212529;
-$text-secondary: #6c757d;
-$accent-gradient: linear-gradient(135deg, #4dabf7, #339af0);
-$accent-hover: linear-gradient(135deg, #339af0, #228be6);
+.form-popup {
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $popup-overlay;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: $z-index-modal;
+    animation: fadeIn 0.3s ease;
+    padding: $spacing-sm;
+    
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-xs;
+      align-items: flex-end;
+    }
+    
+    @media (max-height: 500px) {
+      align-items: flex-start;
+      padding-top: $spacing-md;
+    }
+  }
+
+  &__content {
+    background: $popup-bg;
+    border-radius: $border-radius-lg;
+    box-shadow: $popup-shadow;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: scaleIn 0.3s ease;
+    
+    @media (max-width: $breakpoint-sm) {
+      max-width: 100%;
+      max-height: 95vh;
+      border-radius: $border-radius-lg $border-radius-lg 0 0;
+      animation: slideUp 0.3s ease;
+      margin-bottom: env(safe-area-inset-bottom, 0);
+    }
+    
+    @media (max-height: 500px) {
+      max-height: 95vh;
+    }
+    
+    // Для очень маленьких экранов (до 360px)
+    @media (max-width: 360px) {
+      border-radius: $border-radius-lg $border-radius-lg 0 0;
+    }
+  }
+
+  &__header {
+    padding: $spacing-lg;
+    border-bottom: 1px solid $popup-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: $popup-bg;
+    z-index: 1;
+    
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-md;
+    }
+    
+    @media (max-width: 360px) {
+      padding: $spacing-sm $spacing-md;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-lg;
+    }
+    
+    @media (max-width: 360px) {
+      font-size: 16px;
+    }
+  }
+
+  // &__close {
+  //   background: none;
+  //   border: none;
+  //   font-size: 24px;
+  //   cursor: pointer;
+  //   color: $text-secondary;
+  //   padding: 0;
+  //   width: 32px;
+  //   height: 32px;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   border-radius: 50%;
+  //   flex-shrink: 0;
+    
+  //   &:hover {
+  //     background: $bg-secondary;
+  //     color: $text-primary;
+  //   }
+    
+  //   @media (max-width: $breakpoint-sm) {
+  //     width: 28px;
+  //     height: 28px;
+  //     font-size: 20px;
+  //   }
+  // }
+
+  &__body {
+    padding: $spacing-lg;
+    
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-md;
+    }
+    
+    @media (max-width: 360px) {
+      padding: $spacing-sm;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    @media (max-width: $breakpoint-sm) {
+      gap: $spacing-sm;
+    }
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-xs;
+    }
+  }
+
+  &__input,
+  // &__textarea,
+  &__select {
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $form-border;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
+    font-family: $font-family-base;
+    transition: all $transition-fast;
+    background: $form-bg;
+    color: $text-primary;
+    width: 100%;
+    
+    // Для мобильных устройств
+    @media (max-width: $breakpoint-sm) {
+      font-size: 16px; // Предотвращает масштабирование на iOS
+      padding: $spacing-md;
+      min-height: 44px; // Минимальная высота для удобного нажатия
+    }
+    
+    &:focus {
+      outline: none;
+      border-color: $form-focus-border;
+      box-shadow: 0 0 0 3px rgba($form-focus-border, 0.1);
+    }
+    
+    &:disabled {
+      background: $form-disabled-bg;
+      color: $form-disabled-color;
+      cursor: not-allowed;
+    }
+  }
+
+  // &__textarea {
+  //   min-height: 100px;
+  //   resize: vertical;
+    
+  //   @media (max-width: $breakpoint-sm) {
+  //     min-height: 80px;
+  //   }
+  // }
+
+  &__counter {
+    display: block;
+    text-align: right;
+    font-size: $font-size-xs;
+    margin-top: $spacing-xs;
+    color: $text-light;
+    
+    &_warning {
+      color: $warning-color;
+    }
+    
+    &_error {
+      color: $error-color;
+      font-weight: bold;
+    }
+  }
+
+  &__footer {
+    padding: $spacing-lg;
+    border-top: 1px solid $popup-border;
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+    position: sticky;
+    bottom: 0;
+    background: $popup-bg;
+    
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-md;
+      flex-direction: column-reverse;
+      gap: $spacing-xs;
+      padding-bottom: calc($spacing-md + env(safe-area-inset-bottom, 0));
+    }
+    
+    @media (max-width: 360px) {
+      padding: $spacing-sm;
+      padding-bottom: calc($spacing-sm + env(safe-area-inset-bottom, 0));
+    }
+  }
+
+  &__button {
+    padding: $spacing-sm $spacing-lg;
+    border: none;
+    border-radius: $border-radius;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+    transition: all $transition-fast;
+    min-height: 44px; // Минимальная высота для удобного нажатия на мобильных
+    
+    @media (max-width: $breakpoint-sm) {
+      width: 100%;
+      font-size: 16px;
+      padding: $spacing-md;
+    }
+    
+    &--submit {
+      background: $btn-primary-bg;
+      color: $text-inverse;
+      
+      &:hover:not(:disabled) {
+        background: $btn-primary-hover;
+        transform: translateY(-1px);
+      }
+      
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+    
+    &--cancel {
+      background: $btn-secondary-bg;
+      color: $text-secondary;
+      
+      &:hover {
+        background: $btn-secondary-hover;
+      }
+    }
+  }
+
+  &__error {
+    color: $error-color;
+    font-size: $font-size-sm;
+    margin-top: $spacing-xs;
+    
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-xs;
+    }
+  }
+
+  &__success {
+    color: $success-color;
+    font-size: $font-size-sm;
+    margin-top: $spacing-xs;
+    
+    @media (max-width: $breakpoint-sm) {
+      font-size: $font-size-xs;
+    }
+  }
+}
 
 // Анимации
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Новая анимация для мобильных (снизу вверх)
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(100%);
   }
   to {
     opacity: 1;
@@ -22,272 +337,77 @@ $accent-hover: linear-gradient(135deg, #339af0, #228be6);
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(77, 171, 247, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(77, 171, 247, 0);
-  }
-}
-
-@keyframes avatarGlow {
-  0%, 100% {
-    filter: drop-shadow(0 4px 8px rgba(77, 171, 247, 0.3));
-  }
-  50% {
-    filter: drop-shadow(0 4px 16px rgba(77, 171, 247, 0.5));
-  }
-}
-
-.form-popup {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-  background: $form-bg;
-  border-radius: $form-radius;
-  box-shadow: $form-shadow;
-  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid $form-border;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  }
-  
-  &__avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-    animation: avatarGlow 2s infinite;
-    
-    &:hover {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-  }
-  
-  &__input {
-    flex: 1;
-    padding: 14px 20px;
-    border: 2px solid $form-border;
-    border-radius: 12px;
-    font-size: 16px;
-    font-family: inherit;
-    color: $text-primary;
-    background: #f8f9fa;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-    position: relative;
-    min-height: 52px;
-    
-    &::placeholder {
-      color: $text-secondary;
-      opacity: 0.7;
-      transition: opacity 0.3s ease;
-    }
-    
-    &:focus {
-      background: white;
-      border-color: $form-focus;
-      box-shadow: 0 0 0 4px rgba(77, 171, 247, 0.1);
-      transform: translateY(-1px);
-      
-      &::placeholder {
-        opacity: 0.5;
-      }
-    }
-    
-    &:hover:not(:focus) {
-      border-color: color.adjust($form-border, $lightness: -10%);
-      background: white;
-    }
-  }
-  
-  &__submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    background: $accent-gradient;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
-    
-    &:not(:disabled) {
-      animation: pulse 2s infinite;
-      
-      &:hover {
-        transform: translateY(-2px) scale(1.05);
-        background: $accent-hover;
-        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
-        
-        .form-popup__send svg {
-          transform: translateX(2px) rotate(-30deg);
-        }
-      }
-      
-      &:active {
-        transform: translateY(0) scale(0.98);
-        transition-duration: 0.1s;
-      }
-    }
-    
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      background: linear-gradient(135deg, #adb5bd, #6c757d);
-    }
-    
-    // Ripple effect
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 5px;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.5);
-      opacity: 0;
-      border-radius: 100%;
-      transform: scale(1, 1) translate(-50%, -50%);
-      transform-origin: 50% 50%;
-    }
-    
-    &:focus:not(:disabled)::after {
-      animation: ripple 1s ease-out;
-    }
-  }
-  
-  &__send {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    
-    svg {
-      width: 24px;
-      height: 24px;
-      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-    }
-  }
-}
-
-// Ripple animation
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-
 // Адаптивность
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-sm) {
   .form-popup {
-    padding: 16px;
-    gap: 12px;
-    
-    &__avatar {
-      width: 40px;
-      height: 40px;
-      border-width: 2px;
-    }
-    
-    &__input {
-      padding: 12px 16px;
-      font-size: 15px;
-      min-height: 48px;
-    }
-    
-    &__submit {
-      width: 48px;
-      height: 48px;
-      
-      svg {
-        width: 20px;
-        height: 20px;
-      }
+    &__content {
+      width: 100%;
     }
   }
 }
 
-// Темная тема
+// Планшеты (вертикальная и горизонтальная ориентация)
+@media (min-width: $breakpoint-sm) and (max-width: $breakpoint-md) {
+  .form-popup {
+    &__content {
+      max-width: 90%;
+      width: 90%;
+    }
+    
+    &__header {
+      padding: $spacing-md $spacing-lg;
+    }
+    
+    &__body {
+      padding: $spacing-md;
+    }
+    
+    &__footer {
+      padding: $spacing-md $spacing-lg;
+    }
+  }
+}
+
+// Десктопы среднего размера
+@media (min-width: $breakpoint-md) and (max-width: $breakpoint-lg) {
+  .form-popup {
+    &__content {
+      max-width: 600px;
+    }
+  }
+}
+
+// Ландшафтная ориентация на мобильных
+@media (max-height: 500px) and (orientation: landscape) {
+  .form-popup {
+    &__content {
+      max-height: 85vh;
+      max-width: 90%;
+    }
+    
+    &__body {
+      max-height: 40vh;
+      overflow-y: auto;
+    }
+  }
+}
+
+// Поддержка темной темы (если нужно)
 @media (prefers-color-scheme: dark) {
   .form-popup {
-    background: #2d3748;
-    border-color: #4a5568;
-    
-    &__input {
-      background: #4a5568;
-      border-color: #718096;
-      color: #e2e8f0;
-      
-      &::placeholder {
-        color: #a0aec0;
-      }
-      
-      &:focus {
-        background: #2d3748;
-        border-color: #4dabf7;
-        box-shadow: 0 0 0 4px rgba(77, 171, 247, 0.2);
-      }
-    }
-    
-    &__submit {
-      &:not(:disabled) {
-        background: linear-gradient(135deg, #339af0, #228be6);
-        
-        &:hover {
-          background: linear-gradient(135deg, #228be6, #1c7ed6);
-        }
-      }
+    &__content {
+      background: darken-color($popup-bg, 10%);
     }
   }
 }
 
-// Анимация для появления инпута
-@media (prefers-reduced-motion: no-preference) {
+// Для устройств с выемкой (notch) или скругленными углами
+@supports (padding: max(0px)) {
   .form-popup {
-    &__avatar {
-      animation-delay: 0.1s;
-    }
-    
-    &__input {
-      animation: slideUp 0.5s ease-out 0.2s both;
-    }
-    
-    &__submit {
-      animation: slideUp 0.5s ease-out 0.3s both;
+    &__overlay {
+      padding-left: max($spacing-sm, env(safe-area-inset-left));
+      padding-right: max($spacing-sm, env(safe-area-inset-right));
+      padding-bottom: max($spacing-sm, env(safe-area-inset-bottom));
     }
   }
-}
-
-// Улучшенный focus стиль для доступности
-.form-popup__input:focus-visible {
-  outline: 2px solid $form-focus;
-  outline-offset: 2px;
-}
-
-.form-popup__submit:focus-visible:not(:disabled) {
-  outline: 2px solid white;
-  outline-offset: 2px;
 }

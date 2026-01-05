@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import React, { useCallback, useMemo, lazy, Suspense } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { apiSelectors } from '../../../store/api/apiSelectors';
 import { handleDeleteCard, setIsModal, handleAddingFavourires } from '../../../store/api/apiSlice';
@@ -13,44 +13,62 @@ function CentralColumn({ searchQuery = '', searchResults = [] }) {
 	const messages = useSelector(apiSelectors.getDataMessages)
 	const btnFilterFavourites = useSelector(apiSelectors.getBtnFilterFavourites)
 	const isModal = useSelector(apiSelectors.getIsModal)
-	const [sortedArr, setSortedArr] = useState(messages.centralCol)
+	const isReverse = useSelector(apiSelectors.getIsReverse) // Добавляем isReverse
 
 	const { centralCol } = messages
 
-	useEffect(() => {
-		const filter = centralCol.filter(el => el.liked == true)
-		setSortedArr(filter)
-	}, [btnFilterFavourites, centralCol])
+	// Мемоизированные фильтрованные сообщения
+	const filteredMessages = useMemo(() => {
+    let messagesToShow;
 
-	// Фильтрация по поиску
-	const [filteredMessages, setFilteredMessages] = useState([]);
-	const [filteredFavorites, setFilteredFavorites] = useState([]);
+    if (searchQuery && searchResults.length > 0) {
+      // Используем searchResults, но фильтруем только те, что еще есть в centralCol
+      // Это обеспечит актуальность данных при перемещении карточек
+      const currentCentralIds = new Set(centralCol.map(item => item.id));
+      messagesToShow = searchResults.filter(item => currentCentralIds.has(item.id));
+    } else {
+      messagesToShow = centralCol;
+    }
 
-	useEffect(() => {
-		if (searchQuery && searchResults.length > 0) {
-			// Используем результаты поиска
-			setFilteredMessages(searchResults);
-			const filteredFavs = searchResults.filter(el => el.liked === true);
-			setFilteredFavorites(filteredFavs);
-		} else {
-			// Используем все сообщения
-			setFilteredMessages(centralCol);
-			const filteredFavs = centralCol.filter(el => el.liked === true);
-			setFilteredFavorites(filteredFavs);
+    // Сортируем по дате
+    const sortedMessages = [...messagesToShow].sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    })
+
+    // Если isReverse = true, показываем старые сверху
+    if (isReverse) {
+      return sortedMessages.reverse();
+    }
+
+    return sortedMessages;
+  }, [searchQuery, searchResults, centralCol, isReverse])
+
+	// Мемоизированные избранные сообщения
+	const filteredFavorites = useMemo(() => {
+		let favs = filteredMessages.filter(el => el.liked === true)
+
+		// Сохраняем порядок отфильтрованных сообщений
+		if (isReverse) {
+			return [...favs].reverse()
 		}
-	}, [searchQuery, searchResults, centralCol]);
 
-	// удаление карточки
-	function handleDelCard(data) {
+		return favs
+	}, [filteredMessages, isReverse])
+
+	// Проверка наличия результатов поиска
+	const hasSearchResults = useMemo(() => {
+		return filteredMessages.length > 0
+	}, [filteredMessages])
+
+	const handleDelCard = useCallback((data) => {
 		dispatch(handleDeleteCard({
 			object: data,
 			column
 		}))
 		if (isModal) { dispatch(setIsModal(false)) }
-	}
+	}, [dispatch, column, isModal])
 
-	// добавление в избранное
-	const handleFavourites = (data) => {
+	const handleFavourites = useCallback((data) => {
 		let el
 		if ('liked' in data == false) {
 			el = { ...data, liked: true }
@@ -68,58 +86,70 @@ function CentralColumn({ searchQuery = '', searchResults = [] }) {
 		})
 		const newObj = { ...messages, centralCol: newArr }
 		dispatch(handleAddingFavourires(newObj))
-	}
+	}, [centralCol, dispatch, messages])
 
 	const renderCards = (items) => {
-		if (items.length === 0) {
-			return (
-				<div className="column-base__empty">
-					{searchQuery ? 'Сообщения не найдены' : 'Сообщений нет'}
-				</div>
-			);
-		}
-
-		return items.map((item, index) => {
-			function time(data) { return data.substring(11, 16) }
-			let key = `${item.id}${index}`
-			return (
-				<div
-					id={`${key}/central`}
-					key={key}
-					className="card-wrapper"
-				>
-					<Suspense fallback={<div className="column-base__fallback">Загрузка...</div>}>
-						<Card
-							className={isModal ? "" : "_mini"}
-							column={column}
-							time={time(item.date)}
-							data={item}
-							handleDelCard={handleDelCard}
-							handleFavourites={handleFavourites}
-						/>
-					</Suspense>
-				</div>
-			)
-		});
+	if (items.length === 0) {
+		return (
+			<div className="column-base__empty">
+				{searchQuery ? 'Сообщения не найдены' : 'Сообщений нет'}
+			</div>
+		)
 	}
+
+	return items.map((item) => {
+		function time(data) { return data.substring(11, 16) }
+		// Стабильный ключ на основе id
+		let key = `card-${item.id}`
+		return (
+			<div
+				key={key}
+				className="card-wrapper"
+			>
+				<Suspense fallback={<div className="column-base__fallback">Загрузка...</div>}>
+					<Card
+						key={key} // Добавляем key также в Card
+						className={isModal ? "" : "_mini"}
+						column={column}
+						time={time(item.date)}
+						data={item}
+						handleDelCard={handleDelCard}
+						handleFavourites={handleFavourites}
+					/>
+				</Suspense>
+			</div>
+		)
+	})
+}
 
 	return (
 		<div className="central-column">
 			<div className="central-column__wrapper">
 				{searchQuery && (
 					<div className="column-base__search-info">
-						{/* Поиск: "{searchQuery}"  */}
 						• Найдено: {filteredMessages.length}
 					</div>
 				)}
 
-				{btnFilterFavourites
-					? renderCards(filteredMessages)
-					: renderCards(filteredFavorites)
-				}
+				{searchQuery && !hasSearchResults ? (
+					<div className="column-base__empty">
+						Сообщения не найдены
+					</div>
+				) : (
+					btnFilterFavourites
+						? renderCards(filteredMessages)
+						: renderCards(filteredFavorites)
+				)}
 			</div>
 		</div>
 	)
 }
 
-export default CentralColumn
+const arePropsEqual = (prevProps, nextProps) => {
+	return (
+		prevProps.searchQuery === nextProps.searchQuery &&
+		JSON.stringify(prevProps.searchResults) === JSON.stringify(nextProps.searchResults)
+	)
+}
+
+export default React.memo(CentralColumn, arePropsEqual)
