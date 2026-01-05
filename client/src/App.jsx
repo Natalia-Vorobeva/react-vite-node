@@ -12,7 +12,7 @@ import './App.scss'
 import RightColumn from './components/Columns/RigthColumn/RigthColumn'
 
 function App() {
-	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:44305'
+	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://a0830433.xsph.ru');
 
 	const ref = useRef(null)
 	const dispatch = useDispatch()

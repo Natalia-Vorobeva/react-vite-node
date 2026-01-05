@@ -2,24 +2,7 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import path from "path"
 
-export default defineConfig({
-	css: {
-		preprocessorOptions: {
-			scss: {
-				// additionalData: `
-        //   @use "sass:color";
-        //   @use "sass:map";
-        //   @use "sass:list";
-        //   @use "sass:string";
-        //    @import "./src/assets/styles/_variables.scss";
-        // `
-				//   additionalData: `
-        //   @import "./src/assets/styles/_variables.scss";
-        // `
-      // }
-			}
-		}
-	},
+export default defineConfig({	
 	server: {
 		proxy: {
 			'/api': {
