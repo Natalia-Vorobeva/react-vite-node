@@ -29,19 +29,16 @@ function CentralColumn({ searchQuery = '', searchResults = [] }) {
 			messagesToShow = centralCol;
 		}
 
-		// Сортируем по дате (новые сверху по умолчанию)
 		let sortedMessages = [...messagesToShow].sort((a, b) => {
 			return new Date(b.date) - new Date(a.date);
 		})
 
-		// Если isReverse = true, показываем старые сверху
 		if (isReverse) {
 			sortedMessages = sortedMessages.reverse();
 		}
 
 		setFilteredMessages(sortedMessages);
 
-		// Фильтруем избранные и сохраняем ту же сортировку
 		const favs = sortedMessages.filter(el => el.liked === true);
 		setFilteredFavorites(favs);
 	}, [searchQuery, searchResults, centralCol, isReverse]);

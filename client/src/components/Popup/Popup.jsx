@@ -8,7 +8,7 @@ import Comments from '../Comments/Comments';
 import './Popup.scss';
 
 function Popup() {
-	const containerRef = useRef(null); // Используем ref для контейнера
+	const containerRef = useRef(null); 
 	const wrapperRef = useRef(null);
 	const dispatch = useDispatch();
 	const isModal = useSelector(apiSelectors.getIsModal);
@@ -26,17 +26,14 @@ function Popup() {
 
 	const memoizedFilter = useCallback(handleFilterComments, []);
 
-	// Обработчик клика вне контейнера
 	useEffect(() => {
 		const handleClickOutside = (e) => {
-			// Закрываем попап, если клик был вне контейнера
 			if (containerRef.current && !containerRef.current.contains(e.target)) {
 				dispatch(setIsModal(false));
 			}
 		};
 
 		if (isModal) {
-			// Небольшая задержка, чтобы обработчик не сработал на тот же клик, который открыл попап
 			const timer = setTimeout(() => {
 				document.addEventListener('click', handleClickOutside);
 			}, 0);

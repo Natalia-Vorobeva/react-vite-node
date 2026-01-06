@@ -32,10 +32,9 @@
     transform: translateY(0);
   }
   
-  // Цвета кнопок
   &[id="left"] {
     opacity: .8;
-    background: $button-left-color; // БЕЗ префикса vars.
+    background: $button-left-color;
     
     &:hover {
       opacity: 1;
@@ -44,7 +43,7 @@
   
   &[id="central"] {
     opacity: .8;
-    background: $button-central-color; // БЕЗ префикса vars.
+    background: $button-central-color;
     
     &:hover {
       opacity: 1;
@@ -53,7 +52,7 @@
   
   &[id="right"] {
     opacity: .8;
-    background: $button-right-color; // БЕЗ префикса vars.
+    background: $button-right-color;
     
     &:hover {
       opacity: 1;

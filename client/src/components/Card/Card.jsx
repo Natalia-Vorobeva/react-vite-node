@@ -32,7 +32,6 @@ function Card({
 	const [confirmation, setConfirmation] = useState(true)
 	const [symbolCopy, setSymbolCopy] = useState('⧉')
 
-	// Определяем, является ли эта карточка выбранной для модального окна
 	const isCardSelected = choice?.object?.id === data.id && isModal
 
 	useEffect(() => {
@@ -88,7 +87,6 @@ function Card({
 	}
 
 	const handleCommentOn = (data) => {
-		// Открываем модальное окно в Redux
 		dispatch(setIsModal(true))
 		dispatch(setChoice(
 			{
@@ -96,8 +94,6 @@ function Card({
 				column,
 				time
 			}))
-		
-		// Разворачиваем карточку
 		setVisibleContent(false)
 		setDimensions(false)
 	}
@@ -107,16 +103,10 @@ function Card({
 		setDimensions(false)
 	}
 
-	// Сброс состояния при закрытии модального окна, если эта карточка была выбрана
 	useEffect(() => {
 		if (!isModal && isCardSelected) {
-			// Можно восстановить исходное состояние или оставить как есть
-			// setVisibleContent(true)
-			// setDimensions(true)
 		}
 	}, [isModal, isCardSelected])
-
-	console.log('%cDATA', 'color: purple', {isModal, isCardSelected, cardId: data.id, choiceId: choice?.object?.id})
 
 	return (
 		<section className={`card ${dimensions ? 'card_mini' : ''}`}>
@@ -137,7 +127,6 @@ function Card({
 						</div>
 						<div className="card__column-content-buttons">
 							{
-								// Показываем кнопку копирования ТОЛЬКО для выбранной карточки
 								isCardSelected ?
 									<div onClick={() => handleClipboard(data.content)} className="card__copy">{symbolCopy}</div>
 									:
@@ -178,7 +167,6 @@ function Card({
 
 							<div className={`card__control-card card__control-card${className}`}>
 								{
-									// Показываем кнопки перемещения ТОЛЬКО если карточка не выбрана
 									!isCardSelected && <div className="card__buttons">
 										<Button id="left" buttonName="left" data={data} column={column}
 											onMoveCard={onMoveCard} className={`${column == "left" ? "button_inactive " : ""} ${isCardSelected ? "" : "button_mini"}`} btnText="Левый" />

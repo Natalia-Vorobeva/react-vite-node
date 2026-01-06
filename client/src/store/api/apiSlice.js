@@ -37,7 +37,6 @@ export const apiSlice = createSlice({
 		return { ...object, date: dateModified }
 	})
 	
-	// Сортируем по дате (новые сверху по умолчанию)
 	arrModified.sort((a, b) => {
 		return new Date(b.date) - new Date(a.date)
 	})
@@ -50,18 +49,15 @@ export const apiSlice = createSlice({
 },
 
 	setNewMessages: (state, action) => {
-	// Сравниваем текущие и новые данные
 	const currentCentralCol = state.dataMessages.centralCol
 	const newCentralCol = action.payload.centralCol
 	
-	// Проверяем, действительно ли есть изменения
 	if (JSON.stringify(currentCentralCol) !== JSON.stringify(newCentralCol)) {
 		state.dataMessages = {
 			...state.dataMessages,
 			centralCol: newCentralCol
 		}
 		
-		// Обновляем idLast если есть новые сообщения
 		if (newCentralCol.length > 0) {
 			const ids = newCentralCol.map(msg => msg.id)
 			state.idLast = Math.max(...ids)
@@ -157,14 +153,6 @@ export const apiSlice = createSlice({
 
 		onToggleReverse: (state, action) => {
 			state.isReverse = action.payload
-			// const reverseLeft = state.dataMessages.leftCol.reverse()
-			// const reverseCentral = state.dataMessages.centralCol.reverse()
-			// const reverseRight = state.dataMessages.rightCol.reverse()
-			// state.dataMessages = {
-			// 	leftCol: reverseLeft,
-			// 	centralCol: reverseCentral,
-			// 	rightCol: reverseRight,
-			// }
 		}
 	}
 })

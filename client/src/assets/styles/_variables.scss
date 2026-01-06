@@ -1,9 +1,4 @@
 @use "sass:color";
-// ============================================
-// ФАЙЛ: _variables.scss (ИСПРАВЛЕННАЯ ВЕРСИЯ)
-// ============================================
-
-// @use "sass:color";
 @use "sass:map";
 @use "sass:list";
 @use "sass:string";
@@ -227,8 +222,6 @@ $breakpoint-xxl: 1400px;
 // ПЕРЕМЕННЫЕ ДЛЯ ВАШЕГО ОШИБОЧНОГО КОДА
 // ============================================
 
-// Если в вашем коде используется color.adjust($primary-hover, $lightness: -10%)
-// Это эквивалентно:
 $primary-hover-dark: darken-color($primary-hover, 10%);
 
 // Дополнительные переменные для форм
@@ -264,30 +257,30 @@ $star-color: rgb(238, 234, 132);
 $star-color-active: #FFC107;
 
 // ============================================
-// ФУНКЦИИ ДЛЯ РАБОТЫ С ЦВЕТАМИ (ИСПРАВЛЕННЫЕ ВЕРСИИ)
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ЦВЕТАМИ )
 // ============================================
 
-// Функция для изменения прозрачности (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// Функция для изменения прозрачности
 @function transparentize-color($color, $amount) {
   @return color.adjust($color, $alpha: -$amount);
 }
 
-// Функция для увеличения насыщенности (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// Функция для увеличения насыщенности
 @function saturate-color($color, $percent) {
   @return color.adjust($color, $saturation: $percent * 1%);
 }
 
-// Функция для уменьшения насыщенности (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// Функция для уменьшения насыщенности
 @function desaturate-color($color, $percent) {
   @return color.adjust($color, $saturation: -$percent * 1%);
 }
 
-// Функция для получения контрастного цвета текста (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// Функция для получения контрастного цвета текста 
 @function get-contrast-color($color) {
   @if (color.lightness($color) > 50) {
-    @return #000000; // черный для светлых фонов
+    @return #000000; 
   } @else {
-    @return #ffffff; // белый для темных фонов
+    @return #ffffff; 
   }
 }
 

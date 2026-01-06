@@ -4,12 +4,12 @@ import { onToggleReverse, setDataMessages, setNewMessages, setOldMessages, setSt
 import { apiSelectors } from './store/api/apiSelectors'
 import FormSearch from './components/FormSearch/FormSearch'
 import Preloader from './components/Preloader/Preloader'
+import RightColumn from './components/Columns/RigthColumn/RigthColumn'
 import LeftColumn from './components/Columns/LeftColumn/LeftColumn'
 import CentralColumn from './components/Columns/CentralColumn/CentralColumn'
 import Popup from './components/Popup/Popup'
 import './index.css'
 import './App.scss'
-import RightColumn from './components/Columns/RigthColumn/RigthColumn'
 
 function App() {
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://a0830433.xsph.ru');
@@ -26,7 +26,7 @@ function App() {
 	const [width, setWidth] = useState(window.innerWidth)
 	const [oldMessagesLoaded, setOldMessagesLoaded] = useState(false)
 	const [searchValue, setSearchValue] = useState('')
-	const [activeTab, setActiveTab] = useState('central') // Состояние для активной вкладки
+	const [activeTab, setActiveTab] = useState('central')
 
 	useEffect(() => {
 		const handleResize = (event) => {
@@ -39,14 +39,12 @@ function App() {
 		}
 	}, [width])
 
-	// найденные в поиске объекты
 	const [searchData, setSearchData] = useState({
 		leftCol: [],
 		centralCol: [],
 		rightCol: []
 	})
 
-	// ЗАПРОСЫ
 	const formData = new FormData()
 	formData.append('actionName', 'MessagesLoad')
 	formData.append('messageId', 0)
@@ -70,7 +68,6 @@ function App() {
 		body: formDataNewMessages
 	}
 
-	// получение данных при загрузке страницы
 	useEffect(() => {
 		fetch(`${API_BASE_URL}`, requestOptions)
 			.then(response => response.json())
@@ -85,8 +82,7 @@ function App() {
 				}
 			)
 	}, [])
-
-	// получение новых сообщений
+	
 	async function fetchAPIData() {
 		try {
 			const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
@@ -121,7 +117,6 @@ function App() {
 		return () => clearInterval(intervalId)
 	}, [requestOptionsNewMessages])
 
-	// загрузка "предыдущих" сообщений
 	function handleLoadOldMessages() {
 		fetch(`${API_BASE_URL}`, requestOptionsOldMessages)
 			.then(response => response.json())
@@ -129,7 +124,7 @@ function App() {
 				(result) => {
 					setIsLoading(false)
 					dispatch(setOldMessages(result.Messages))
-					setOldMessagesLoaded(true) // Делаем кнопку неактивной
+					setOldMessagesLoaded(true) 
 				},
 				(error) => {
 					setIsLoading(true)
@@ -142,7 +137,6 @@ function App() {
 		const columnKey = `${column}Col`;
 		const allMessages = dataMessages[columnKey] || [];
 
-		// Если есть поиск, используем актуальные данные
 		if (searchValue) {
 			const searchResults = allMessages.filter(el =>
 				el.content.toLowerCase().includes(searchValue.toLowerCase())
@@ -180,27 +174,19 @@ function App() {
 		setSearchLength(count)
 	}
 
-
-
-
-
-	// Функция для очистки поиска
 	function handleClearSearch() {
 		setSearchValue('')
 		setSearchLength(null)
 		setSearchData({ leftCol: [], centralCol: [], rightCol: [] })
 	}
 
-	// Функция для получения количества сообщений в колонке
 	const getColumnMessageCount = (column, isFiltered = false) => {
 		if (searchValue) {
 			return searchData[`${column}Col`]?.length || 0
 		}
-
 		if (isFiltered && btnFilterFavourites) {
 			return dataMessages[`${column}Col`]?.filter(el => el.liked)?.length || 0
 		}
-
 		return dataMessages[`${column}Col`]?.length || 0
 	}
 
@@ -226,7 +212,6 @@ function App() {
 								</div>
 								{searchLength !== null && (
 									<div className="app__search-info">• Найдено: {searchLength}
-										{/* <p className="app__length"></p> */}
 									</div>
 								)}
 							</div>
@@ -309,14 +294,12 @@ function App() {
 
 					<div className="app__columns">
 						{width > 900 ? (
-							// Десктопная версия: все три колонки
 							<>
 								<LeftColumn searchQuery={searchValue} searchResults={searchData.leftCol} />
 								<CentralColumn searchQuery={searchValue} searchResults={searchData.centralCol} />
 								<RightColumn searchQuery={searchValue} searchResults={searchData.rightCol} />
 							</>
 						) : (
-							// Мобильная версия: только активная колонка
 							<>
 								{activeTab === 'left' && (
 									<LeftColumn searchQuery={searchValue} searchResults={searchData.leftCol} />

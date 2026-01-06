@@ -5,8 +5,7 @@ import './FormPopup.scss';
 function FormPopup({ onSubmit }) {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Автофокус на textarea при монтировании
+ 
   useEffect(() => {
     const textarea = document.querySelector('.comment__textarea');
     if (textarea) {

@@ -1,5 +1,3 @@
-/* @import './assets/styles/_variables.scss'; */
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -12,8 +10,6 @@ body {
   color: #1e293b;
   overflow: hidden;
 }
-
-
 
 .card-enter {
   opacity: 0;

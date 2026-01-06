@@ -16,18 +16,14 @@ function Button({ btnText, data, column,
 
 	const handleClick = () => {
 		if (onMoveCard) {
-			// Используем обработчик из пропсов
 			onMoveCard(buttonName, data);
 		} else {
-			// Или стандартный dispatch
 			dispatch(handleButton({
 				object: data,
 				column,
 				buttonName
 			}));
 		}
-
-		console.log(`Перемещение: из ${column} в ${buttonName}`, data);
 	};
 
 	return (

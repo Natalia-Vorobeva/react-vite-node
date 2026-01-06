@@ -9,7 +9,6 @@
   background: linear-gradient(180deg, #d7d8d8 0%, #bbb3b3 100%);
   padding: 1rem;
   
-  // Контейнер для формы ввода
   &__form-container {
     display: flex;
     flex-direction: column;
@@ -45,11 +44,10 @@
       box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.1);
     }
     
-    // Для мобильных устройств
     @media (max-width: 576px) {
-      font-size: 16px; // Предотвращает масштабирование на iOS
+      font-size: 16px; 
       padding: 14px 16px;
-      min-height: 48px; // Удобное нажатие на мобильных
+      min-height: 48px;
       border-radius: 16px;
       margin: 0;
     }
@@ -91,7 +89,6 @@
       opacity: 0.6;
     }
     
-    // Адаптив для мобильных
     @media (max-width: 576px) {
       height: 48px;
       width: 48px;
@@ -333,7 +330,6 @@
     }
   }
   
-  // Пустой список комментариев
   &__empty {
     text-align: center;
     padding: 2rem;
@@ -348,7 +344,6 @@
     }
   }
   
-  // Список комментариев
   &__list {
     display: flex;
     flex-direction: column;
@@ -359,7 +354,6 @@
     }
   }
   
-  // Анимация появления комментария
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -371,7 +365,6 @@
     }
   }
   
-  // Анимация для мобильного ввода
   @keyframes slideUp {
     from {
       transform: translateY(100%);
@@ -383,21 +376,16 @@
     }
   }
   
-  // Медиа-запросы для адаптивности
-  
-  // Мобильные устройства
   @media (max-width: 576px) {
     gap: 1rem;
     padding: 0.8rem;
     
-    // Для очень длинных слов
     &__item {
       overflow-wrap: break-word;
       hyphens: auto;
     }
   }
   
-  // Очень маленькие экраны
   @media (max-width: 360px) {
     gap: 0.8rem;
     padding: 0.6rem;
@@ -412,7 +400,6 @@
     }
   }
   
-  // Ландшафтная ориентация
   @media (max-height: 500px) and (orientation: landscape) {
     &__textarea {
       max-height: 80px;
@@ -434,7 +421,6 @@
     }
   }
   
-  // Для устройств с выемкой (iPhone X и новее)
   @supports (padding: max(0px)) {
     @media (max-width: 576px) {
       padding-left: max(0.8rem, env(safe-area-inset-left));
