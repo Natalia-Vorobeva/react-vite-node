@@ -103,39 +103,39 @@ function App() {
       )
   }, [])
   
-  async function fetchAPIData() {
-    try {
-      const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
-      if (!response.ok) throw new Error('Ошибка сети')
-      const data = await response.json()
-      if (typeof data !== 'string') {
-        let arrModified = data.Messages.map(object => {
-          let dateModified = object.date.replace(/ /g, 'T').concat("Z")
-          return { ...object, date: dateModified }
-        })
-        let arr = [...dataMessages.centralCol, ...arrModified]
-        arr.sort((a, b) => {
-          return new Date(b.date) - new Date(a.date)
-        })
-        const ids = arr.map(object => object.id)
-        let id = Math.max(...ids)
-        dispatch(setLastId(id))
-        dispatch(setNewMessages({ ...dataMessages, centralCol: arr }))
-      } else {
-        return
-      }
-    }
-    catch (err) {
-      console.log('Ошибка:', err)
-    }
-  }
+  // async function fetchAPIData() {
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}`, requestOptionsNewMessages)
+  //     if (!response.ok) throw new Error('Ошибка сети')
+  //     const data = await response.json()
+  //     if (typeof data !== 'string') {
+  //       let arrModified = data.Messages.map(object => {
+  //         let dateModified = object.date.replace(/ /g, 'T').concat("Z")
+  //         return { ...object, date: dateModified }
+  //       })
+  //       let arr = [...dataMessages.centralCol, ...arrModified]
+  //       arr.sort((a, b) => {
+  //         return new Date(b.date) - new Date(a.date)
+  //       })
+  //       const ids = arr.map(object => object.id)
+  //       let id = Math.max(...ids)
+  //       dispatch(setLastId(id))
+  //       dispatch(setNewMessages({ ...dataMessages, centralCol: arr }))
+  //     } else {
+  //       return
+  //     }
+  //   }
+  //   catch (err) {
+  //     console.log('Ошибка:', err)
+  //   }
+  // }
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchAPIData(requestOptionsNewMessages)
-    }, 5000)
-    return () => clearInterval(intervalId)
-  }, [requestOptionsNewMessages])
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     fetchAPIData(requestOptionsNewMessages)
+  //   }, 5000)
+  //   return () => clearInterval(intervalId)
+  // }, [requestOptionsNewMessages])
 
   function handleLoadOldMessages() {
     fetch(`${API_BASE_URL}`, requestOptionsOldMessages)

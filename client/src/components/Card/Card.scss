@@ -213,6 +213,8 @@
     }
     
     &_full {
+			
+			padding: 0 10px 0 0;
       display: block;
       line-height: 1.5;
       animation: fadeIn 0.3s ease;
@@ -683,6 +685,8 @@
     }
     
     &_full {
+			
+			padding: 0 10px 0 0;
       display: block;
       line-height: 1.5;
       animation: fadeIn 0.3s ease;
@@ -710,6 +714,7 @@
     }
     
     .card__subtitle_full {
+			padding: 0 10px 0 0;
       width: 100%;
       min-width: 100%;
     }
@@ -729,7 +734,7 @@
     &__subtitle_full {
       font-size: 0.85rem;
       line-height: 1.5;
-      padding: 0.5rem 0;
+      padding: 0 10px 0 0;
       width: 100% !important;
       max-width: 100% !important;
       box-sizing: border-box;
@@ -739,7 +744,8 @@
 
 @media (max-width: 480px) {
   .card {
-    &__subtitle_full {
+    &__subtitle_full {		
+			padding: 0 10px 0 0;
       font-size: 0.8rem;
       line-height: 1.4;
     }
